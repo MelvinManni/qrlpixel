@@ -49,21 +49,27 @@ export interface Database {
           created_at: string
           description: string | null
           id: number
+          image_url: string
           name: string
+          redirect_id: string
           url: string
         }
         Insert: {
           created_at?: string
           description?: string | null
           id?: number
+          image_url?: string
           name?: string
+          redirect_id: string
           url?: string
         }
         Update: {
           created_at?: string
           description?: string | null
           id?: number
+          image_url?: string
           name?: string
+          redirect_id?: string
           url?: string
         }
         Relationships: []
