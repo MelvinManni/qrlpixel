@@ -9,7 +9,40 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
-      click: {
+      qrcode: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: number
+          image_url: string
+          name: string
+          redirect_id: string
+          url: string
+          user: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: number
+          image_url?: string
+          name?: string
+          redirect_id: string
+          url: string
+          user: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: number
+          image_url?: string
+          name?: string
+          redirect_id?: string
+          url?: string
+          user?: string
+        }
+        Relationships: []
+      }
+      scan: {
         Row: {
           count: number
           created_at: string
@@ -43,36 +76,6 @@ export interface Database {
             referencedColumns: ["id"]
           }
         ]
-      }
-      qrcode: {
-        Row: {
-          created_at: string
-          description: string | null
-          id: number
-          image_url: string
-          name: string
-          redirect_id: string
-          url: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          id?: number
-          image_url?: string
-          name?: string
-          redirect_id: string
-          url?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          id?: number
-          image_url?: string
-          name?: string
-          redirect_id?: string
-          url?: string
-        }
-        Relationships: []
       }
     }
     Views: {
