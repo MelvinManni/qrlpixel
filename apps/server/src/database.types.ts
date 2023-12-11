@@ -44,7 +44,7 @@ export interface Database {
       }
       scan: {
         Row: {
-          count: number
+          country: string | null
           created_at: string
           device: string | null
           id: number
@@ -52,7 +52,7 @@ export interface Database {
           qrcode: number
         }
         Insert: {
-          count?: number
+          country?: string | null
           created_at?: string
           device?: string | null
           id?: number
@@ -60,7 +60,7 @@ export interface Database {
           qrcode: number
         }
         Update: {
-          count?: number
+          country?: string | null
           created_at?: string
           device?: string | null
           id?: number
@@ -69,7 +69,7 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "click_qrcode_fkey"
+            foreignKeyName: "scan_qrcode_fkey"
             columns: ["qrcode"]
             isOneToOne: false
             referencedRelation: "qrcode"
