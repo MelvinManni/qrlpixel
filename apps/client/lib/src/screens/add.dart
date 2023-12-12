@@ -29,6 +29,7 @@ class _AddNewQRCodeScreenState extends State<AddNewQRCodeScreen> {
         label: 'Generate New QR Code',
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: CustomPalette.secondary,
         onPressed: () {
           bottomModalSheet(
               Padding(
@@ -40,6 +41,7 @@ class _AddNewQRCodeScreenState extends State<AddNewQRCodeScreen> {
                       dots: dots,
                       cornerDot: cornerDot,
                       cornerSquare: cornerSquare,
+                      imagePath: imagePicked?.path,
                     ),
                   ],
                 ),
@@ -50,7 +52,7 @@ class _AddNewQRCodeScreenState extends State<AddNewQRCodeScreen> {
         },
         child: const Icon(
           Icons.preview_outlined,
-          color: CustomPalette.white,
+          color: CustomPalette.primary,
         ),
       ),
       body: SafeArea(
@@ -59,6 +61,7 @@ class _AddNewQRCodeScreenState extends State<AddNewQRCodeScreen> {
             color: CustomPalette.white,
             child: ScreenPadding(
               top: 30,
+              bottom: 65,
               child: Column(
                 children: [
                   Text(
@@ -135,7 +138,11 @@ class _AddNewQRCodeScreenState extends State<AddNewQRCodeScreen> {
                           },
                           imagePicked: imagePicked,
                         ),
-                      )
+                      ),
+                      const SizedBox(
+                        height: 40,
+                      ),
+                      TextButton(onPressed: (){}, child: const Text("Generate QR Code"))
                     ],
                   ))
                 ],

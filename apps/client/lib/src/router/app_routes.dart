@@ -34,7 +34,6 @@ class AppRouteShell extends StatefulWidget {
 
 class _AppRouteShellState extends State<AppRouteShell>
     with TickerProviderStateMixin {
-  int _activeIndex = 0;
   final tabLocations = ['/app', '/app/add', '/app/analysis'];
   @override
   Widget build(BuildContext context) {
@@ -111,8 +110,8 @@ class _AppRouteShellState extends State<AppRouteShell>
 
   _getIconColor(int index) {
     final path = getCurrentRouteUri(context);
-    print(path);
-    if (path ==  tabLocations[index]) {
+
+    if (path == tabLocations[index]) {
       return CustomPalette.white;
     } else {
       return CustomPalette.inactive;
@@ -124,10 +123,6 @@ class _AppRouteShellState extends State<AppRouteShell>
   }
 
   _onNavClicked(int index) {
-    setState(() {
-      _activeIndex = index;
-    });
-
     context.go(tabLocations[index]);
   }
 }

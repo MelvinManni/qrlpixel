@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:math';
 
 import 'package:client/src/theme/custom_palette.dart';
@@ -9,40 +8,53 @@ class MockQRCodeWidget extends StatelessWidget {
       {super.key,
       this.dots = CustomPalette.primary,
       this.cornerDot = CustomPalette.primary,
-      this.cornerSquare = CustomPalette.primary});
+      this.cornerSquare = CustomPalette.primary,
+      this.imagePath});
 
   final Color dots;
   final Color cornerDot;
   final Color cornerSquare;
+  final String? imagePath;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 300,
-      height: 300,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _buildRowWithSquare(),
-          _buildQRRow(30),
-          _buildQRRow(30),
-          _buildQRRow(30),
-          _buildQRRow(30),
-          _buildQRRow(30),
-          _buildQRRow(30),
-          _buildQRRow(30),
-          _buildQRRow(30),
-          _buildQRRow(30),
-          _buildQRRow(30),
-          _buildQRRow(30),
-          _buildQRRow(30),
-          _buildQRRow(30),
-          _buildQRRow(30),
-          _buildQRRow(30),
-          _buildQRRow(30),
-          _buildRowWithSquare( bottom: true),
-        ],
-      ),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        SizedBox(
+          width: 300,
+          height: 300,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildRowWithSquare(),
+              _buildQRRow(30),
+              _buildQRRow(30),
+              _buildQRRow(30),
+              _buildQRRow(30),
+              _buildQRRow(30),
+              _buildQRRow(30),
+              _buildQRRow(30),
+              _buildQRRow(30),
+              _buildQRRow(30),
+              _buildQRRow(30),
+              _buildQRRow(30),
+              _buildQRRow(30),
+              _buildQRRow(30),
+              _buildQRRow(30),
+              _buildQRRow(30),
+              _buildQRRow(30),
+              _buildRowWithSquare(bottom: true),
+            ],
+          ),
+        ),
+        Positioned(
+            child: FractionallySizedBox(
+                widthFactor: 0.3,
+                child: LogoContainer(
+                  imagePath: imagePath,
+                ))),
+      ],
     );
   }
 
@@ -116,6 +128,30 @@ class MockQRCodeWidget extends StatelessWidget {
           bottom: bottom,
         ),
       ],
+    );
+  }
+}
+
+class LogoContainer extends StatelessWidget {
+  const LogoContainer({super.key, this.imagePath});
+
+  final String? imagePath;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: CustomPalette.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.asset(
+          imagePath ?? "assets/logo.png",
+          fit: BoxFit.contain,
+        ),
+      ),
     );
   }
 }
