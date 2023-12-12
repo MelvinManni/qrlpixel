@@ -1,9 +1,11 @@
 import 'package:client/src/screens/loading.dart';
+import 'package:client/src/screens/login.dart';
 import 'package:client/src/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 final rootRouter = GoRouter(
+  initialLocation: '/login',
   routes: [
     GoRoute(
       path: '/',
@@ -12,7 +14,7 @@ final rootRouter = GoRouter(
     GoRoute(
       path: '/login',
       name: "login",
-      builder: (context, state) => const SizedBox(),
+      builder: (context, state) => const LoginScreen(),
     ),
     GoRoute(
       path: "/signup",
