@@ -8,22 +8,31 @@ class LoadingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: CustomPalette.primary,
-      body: Center(
-        child: Column(
-          children: [
-            Image.asset(
-              "assets/logo_white.png",
-              width: 100,
-            ),
-            const SizedBox(
-              height: 30,
-              width: 30,
-              child: CircularProgressIndicator(
-                color: CustomPalette.white,
-                strokeWidth: 2,
+      body: SafeArea(
+        child: Align(
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Image.asset(
+                "assets/logo_white.png",
+                width: 100,
               ),
-            ),
-          ],
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0),
+                child: SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: CircularProgressIndicator(
+                    color: CustomPalette.white,
+                    strokeWidth: 2,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

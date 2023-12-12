@@ -36,8 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   # This allows you to use the GoRouter package for routing
   go_router: ^12.1.1
-  # This allows for easy setup of your splash screen
-  flutter_native_splash: ^2.3.8
+
   # This is used as a color picker for flutter
   flutter_colorpicker: ^1.0.3
   image_picker: ^1.0.4
@@ -46,7 +45,6 @@ dependencies:
   skeletonizer: ^0.8.0
   intl: ^0.18.1
   share_plus: ^7.2.1
-  flutter_launcher_icons: ^0.13.1
 
 dev_dependencies:
   flutter_test:
@@ -58,6 +56,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  
+  # This allows for easy setup of your splash screen
+  flutter_native_splash: ^2.3.8
+  flutter_launcher_icons: ^0.13.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
