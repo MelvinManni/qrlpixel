@@ -143,9 +143,12 @@ class _AddNewQRCodeScreenState extends State<AddNewQRCodeScreen> {
                       const SizedBox(
                         height: 40,
                       ),
-                      TextButton(onPressed: (){
-                        clearStackAndNavigate(context, "/app/qrcode/23");
-                      }, child: const Text("Generate QR Code"))
+                      TextButton(
+                        onPressed: () {
+                          clearStackAndNavigate(context, "/app/qrcode/23");
+                        },
+                        child: const Text("Generate QR Code"),
+                      )
                     ],
                   ))
                 ],
