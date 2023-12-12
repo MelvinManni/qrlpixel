@@ -47,10 +47,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     obscureText: true,
                   ),
                   TextButton(
-                      onPressed: () {
-                        clearStackAndNavigate(context, '/app');
-                      },
-                      child: const Text("Continue"))
+                    onPressed: () {
+                      clearStackAndNavigate(context, '/app');
+                    },
+                    child: const Text("Continue"),
+                  )
                 ],
               ),
             ),

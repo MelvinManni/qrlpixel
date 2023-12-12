@@ -3,10 +3,12 @@ import 'package:client/src/theme/custom_palette.dart';
 import 'package:client/src/widgets/auto_scroll.dart';
 import 'package:client/src/widgets/bottom_modal_sheet.dart';
 import 'package:client/src/widgets/custom_color_picker.dart';
+import 'package:client/src/widgets/custom_image_picker.dart';
 import 'package:client/src/widgets/input_field.dart';
 import 'package:client/src/widgets/mock_qr_code.dart';
 import 'package:client/src/widgets/screen_padding.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AddNewQRCodeScreen extends StatefulWidget {
   const AddNewQRCodeScreen({super.key});
@@ -19,6 +21,7 @@ class _AddNewQRCodeScreenState extends State<AddNewQRCodeScreen> {
   Color dots = CustomPalette.primary;
   Color cornerDot = CustomPalette.primary;
   Color cornerSquare = CustomPalette.primary;
+  XFile? imagePicked;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,8 +31,9 @@ class _AddNewQRCodeScreenState extends State<AddNewQRCodeScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           bottomModalSheet(
-               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
                 child: Column(
                   children: [
                     MockQRCodeWidget(
@@ -112,6 +116,25 @@ class _AddNewQRCodeScreenState extends State<AddNewQRCodeScreen> {
                             label: "Corner Square Color",
                           )
                         ],
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: Divider(),
+                      ),
+                      const InputLabel(label: "Upload Logo/Image"),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: CustomImagePicker(
+                          setImage: (image) {
+                            setState(() {
+                              imagePicked = image;
+                            });
+                          },
+                          imagePicked: imagePicked,
+                        ),
                       )
                     ],
                   ))
