@@ -8,7 +8,7 @@ class CustomPalette {
   static const Color success = Color(0xFF27AE60);
   static const Color warning = Color(0xFFF2C94C);
   static const Color info = Color(0xFF2F80ED);
-  static const Color white = Color(0xFFFFFFFF);
+  static const int _white = 0xFFFFFFFF;
   static const Color text = Color(0xFF333333);
 
   static const MaterialColor primary = MaterialColor(
@@ -43,4 +43,17 @@ class CustomPalette {
       950: Color(0xFF645950),
     },
   );
+
+  static const MaterialColor white = MaterialColor(_white, <int, Color>{
+    50: Color(0xFFFFFFFF),
+    100: Color(0xFFFFFFFF),
+    200: Color(0xFFFFFFFF),
+    300: Color(0xFFFFFFFF),
+    400: Color(0xFFFFFFFF),
+    500: Color(0xFFFFFFFF),
+    600: Color(0xFFFFFFFF),
+    700: Color(0xFFFFFFFF),
+    800: Color(0xFFF7F9F7),
+    900: Color(0xFFF4F4F4),
+  });
 }
