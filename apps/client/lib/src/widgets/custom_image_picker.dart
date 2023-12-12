@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:client/src/theme/custom_palette.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -104,17 +101,21 @@ class CustomImagePicker extends StatelessWidget {
     if (pickedFile != null) {
       final croppedFile = await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
-        compressFormat: ImageCompressFormat.jpg,
+        compressFormat: ImageCompressFormat.png,
         compressQuality: 100,
+        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+        aspectRatioPresets: [CropAspectRatioPreset.square],
         uiSettings: [
           AndroidUiSettings(
-              toolbarTitle: 'Cropper',
-              toolbarColor: Colors.deepOrange,
-              toolbarWidgetColor: Colors.white,
-              initAspectRatio: CropAspectRatioPreset.original,
-              lockAspectRatio: false),
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepOrange,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: true,
+          ),
           IOSUiSettings(
             title: 'Cropper',
+            aspectRatioLockEnabled: true,
           ),
         ],
       );
