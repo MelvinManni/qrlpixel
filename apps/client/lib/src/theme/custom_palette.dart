@@ -29,7 +29,7 @@ class CustomPalette {
     },
   );
   static const MaterialColor secondary = MaterialColor(
-    _primaryColor,
+    _secondaryColor,
     <int, Color>{
       50: Color(0xFFFBEBDF),
       100: Color(0xFFFBE8D9),
