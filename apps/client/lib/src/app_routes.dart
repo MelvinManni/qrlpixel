@@ -1,4 +1,5 @@
 import 'package:client/src/screens/loading.dart';
+import 'package:client/src/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -14,7 +15,7 @@ final rootRouter = GoRouter(
       builder: (context, state) => const SizedBox(),
     ),
     GoRoute(
-      path: "signup",
+      path: "/signup",
       name: "signup",
       builder: (context, state) => const SizedBox(),
     ),
@@ -30,3 +31,16 @@ final rootRouter = GoRouter(
     ),
   ],
 );
+
+class MaterialRouterApp extends StatelessWidget {
+  const MaterialRouterApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      title: 'Flutter Demo',
+      theme: MyTheme.themeData,
+      routerConfig: rootRouter,
+    );
+  }
+}
