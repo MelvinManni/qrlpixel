@@ -1,3 +1,4 @@
+import 'package:client/src/screens/add.dart';
 import 'package:client/src/screens/home.dart';
 import 'package:client/src/theme/custom_palette.dart';
 import 'package:client/src/utils.dart';
@@ -13,7 +14,7 @@ final appShellRoute = ShellRoute(
     ),
     GoRoute(
       path: '/app/add',
-      builder: (context, state) => const Placeholder(),
+      builder: (context, state) => const AddNewQRCodeScreen(),
     ),
     GoRoute(
       path: '/app/analysis',
@@ -109,7 +110,9 @@ class _AppRouteShellState extends State<AppRouteShell>
   }
 
   _getIconColor(int index) {
-    if (index == _activeIndex) {
+    final path = getCurrentRouteUri(context);
+    print(path);
+    if (path ==  tabLocations[index]) {
       return CustomPalette.white;
     } else {
       return CustomPalette.inactive;
@@ -125,6 +128,6 @@ class _AppRouteShellState extends State<AppRouteShell>
       _activeIndex = index;
     });
 
-    context.push(tabLocations[index]);
+    context.go(tabLocations[index]);
   }
 }

@@ -20,7 +20,8 @@ class AutoScrollChild extends StatelessWidget {
             padding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom),
             constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height * 0.8),
+                minHeight: MediaQuery.of(context).size.height * 0.8, minWidth: MediaQuery.of(context).size.width),
+
             child: child,
           ), // your column
         );

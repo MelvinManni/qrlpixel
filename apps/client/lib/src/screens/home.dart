@@ -5,6 +5,7 @@ import 'package:client/src/widgets/input_field.dart';
 import 'package:client/src/widgets/screen_padding.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -148,8 +149,8 @@ class LogoutAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       title: Text(label ?? ""),
-      leadingWidth: 0,
-      centerTitle: false,
+      leadingWidth: context.canPop() ? null : 0,
+      centerTitle: context.canPop(),
       actions: [
         IconButton(
             onPressed: () {
