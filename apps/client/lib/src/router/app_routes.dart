@@ -52,6 +52,8 @@ class _AppRouteShellState extends State<AppRouteShell>
     setState(() {
       _activeIndex = index;
     });
+
+    context.push(tabLocations[index]);
   }
 
   @override
@@ -123,6 +125,7 @@ class _AppRouteShellState extends State<AppRouteShell>
                 ),
               ),
             ),
+            body: widget.child,
     );
   }
 }
