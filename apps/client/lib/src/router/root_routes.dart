@@ -1,12 +1,15 @@
+import 'package:client/src/router/app_routes.dart';
+import 'package:client/src/screens/forgot_password.dart';
 import 'package:client/src/screens/loading.dart';
 import 'package:client/src/screens/login.dart';
+import 'package:client/src/screens/reset_password.dart';
 import 'package:client/src/screens/signup.dart';
 import 'package:client/src/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 final rootRouter = GoRouter(
-  initialLocation: '/login',
+  initialLocation: '/app',
   routes: [
     GoRoute(
       path: '/',
@@ -25,13 +28,14 @@ final rootRouter = GoRouter(
     GoRoute(
       path: "/forgot-password",
       name: "forgot-password",
-      builder: (context, state) => const SizedBox(),
+      builder: (context, state) => const ForgotPasswordScreen(),
     ),
     GoRoute(
-      path: "/change-password",
-      name: "change-password",
-      builder: (context, state) => const SizedBox(),
+      path: "/reset-password",
+      name: "reset-password",
+      builder: (context, state) => const ResetPasswordScreen(),
     ),
+    appShellRoute,
   ],
 );
 

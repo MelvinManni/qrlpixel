@@ -1,3 +1,4 @@
+import 'package:client/src/utils.dart';
 import 'package:client/src/widgets/auto_scroll.dart';
 import 'package:client/src/theme/custom_palette.dart';
 import 'package:client/src/widgets/input_field.dart';
@@ -75,7 +76,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  TextButton(onPressed: () {}, child: const Text("Continue")),
+                  TextButton(
+                      onPressed: () {
+                        clearStackAndNavigate(context, "/app");
+                      },
+                      child: const Text("Continue")),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
                     child: Row(

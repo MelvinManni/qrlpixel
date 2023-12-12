@@ -20,7 +20,7 @@ final ThemeData theme = ThemeData(
       color: CustomPalette.text,
       fontFamily: "RedHatDisplay",
       fontWeight: FontWeight.normal,
-      fontSize: 14,
+      fontSize: 15,
     ),
     bodySmall: TextStyle(
       color: CustomPalette.text,
