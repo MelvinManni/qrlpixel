@@ -18,43 +18,59 @@ class MockQRCodeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        SizedBox(
-          width: 300,
-          height: 300,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildRowWithSquare(),
-              _buildQRRow(30),
-              _buildQRRow(30),
-              _buildQRRow(30),
-              _buildQRRow(30),
-              _buildQRRow(30),
-              _buildQRRow(30),
-              _buildQRRow(30),
-              _buildQRRow(30),
-              _buildQRRow(30),
-              _buildQRRow(30),
-              _buildQRRow(30),
-              _buildQRRow(30),
-              _buildQRRow(30),
-              _buildQRRow(30),
-              _buildQRRow(30),
-              _buildQRRow(30),
-              _buildRowWithSquare(bottom: true),
-            ],
-          ),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      
+      child: Container(
+        width: 316,
+        height: 316,
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(color: CustomPalette.white, boxShadow: [
+          BoxShadow(
+            color: CustomPalette.primary[50]!.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ]),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            SizedBox(
+              width: 300,
+              height: 300,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildRowWithSquare(),
+                  _buildQRRow(30),
+                  _buildQRRow(30),
+                  _buildQRRow(30),
+                  _buildQRRow(30),
+                  _buildQRRow(30),
+                  _buildQRRow(30),
+                  _buildQRRow(30),
+                  _buildQRRow(30),
+                  _buildQRRow(30),
+                  _buildQRRow(30),
+                  _buildQRRow(30),
+                  _buildQRRow(30),
+                  _buildQRRow(30),
+                  _buildQRRow(30),
+                  _buildQRRow(30),
+                  _buildQRRow(30),
+                  _buildRowWithSquare(bottom: true),
+                ],
+              ),
+            ),
+            Positioned(
+                child: FractionallySizedBox(
+                    widthFactor: 0.3,
+                    child: LogoContainer(
+                      imagePath: imagePath,
+                    ))),
+          ],
         ),
-        Positioned(
-            child: FractionallySizedBox(
-                widthFactor: 0.3,
-                child: LogoContainer(
-                  imagePath: imagePath,
-                ))),
-      ],
+      ),
     );
   }
 

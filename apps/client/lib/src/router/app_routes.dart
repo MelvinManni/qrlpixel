@@ -1,5 +1,6 @@
 import 'package:client/src/screens/add.dart';
 import 'package:client/src/screens/home.dart';
+import 'package:client/src/screens/qrcode_item.dart';
 import 'package:client/src/theme/custom_palette.dart';
 import 'package:client/src/utils.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,13 @@ final appShellRoute = ShellRoute(
     GoRoute(
       path: '/app/analysis',
       builder: (context, state) => const Placeholder(),
+    ),
+    GoRoute(
+      path: "/app/qrcode/:id",
+      name: "qrcode-item",
+      builder: (context, state) => QRCodeItemScreen(
+        id: state.pathParameters['id'],
+      ),
     ),
   ],
 );

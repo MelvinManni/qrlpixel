@@ -1,5 +1,6 @@
 import 'package:client/src/screens/home.dart';
 import 'package:client/src/theme/custom_palette.dart';
+import 'package:client/src/utils.dart';
 import 'package:client/src/widgets/auto_scroll.dart';
 import 'package:client/src/widgets/bottom_modal_sheet.dart';
 import 'package:client/src/widgets/custom_color_picker.dart';
@@ -142,7 +143,9 @@ class _AddNewQRCodeScreenState extends State<AddNewQRCodeScreen> {
                       const SizedBox(
                         height: 40,
                       ),
-                      TextButton(onPressed: (){}, child: const Text("Generate QR Code"))
+                      TextButton(onPressed: (){
+                        clearStackAndNavigate(context, "/app/qrcode/23");
+                      }, child: const Text("Generate QR Code"))
                     ],
                   ))
                 ],
