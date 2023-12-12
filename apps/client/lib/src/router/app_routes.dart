@@ -35,27 +35,6 @@ class _AppRouteShellState extends State<AppRouteShell>
     with TickerProviderStateMixin {
   int _activeIndex = 0;
   final tabLocations = ['/app', '/app/add', '/app/analysis'];
-
-  _getIconColor(int index) {
-    if (index == _activeIndex) {
-      return CustomPalette.white;
-    } else {
-      return CustomPalette.inactive;
-    }
-  }
-
-  displayBottomNav(String path) {
-    return tabLocations.contains(path);
-  }
-
-  _onNavClicked(int index) {
-    setState(() {
-      _activeIndex = index;
-    });
-
-    context.push(tabLocations[index]);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,7 +104,27 @@ class _AppRouteShellState extends State<AppRouteShell>
                 ),
               ),
             ),
-            body: widget.child,
+      body: widget.child,
     );
+  }
+
+  _getIconColor(int index) {
+    if (index == _activeIndex) {
+      return CustomPalette.white;
+    } else {
+      return CustomPalette.inactive;
+    }
+  }
+
+  displayBottomNav(String path) {
+    return tabLocations.contains(path);
+  }
+
+  _onNavClicked(int index) {
+    setState(() {
+      _activeIndex = index;
+    });
+
+    context.push(tabLocations[index]);
   }
 }
