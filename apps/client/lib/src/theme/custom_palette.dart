@@ -8,6 +8,7 @@ class CustomPalette {
   static const Color success = Color(0xFF27AE60);
   static const Color warning = Color(0xFFF2C94C);
   static const Color info = Color(0xFF2F80ED);
+  static const Color link = Color(0xFF6E85E3);
   static const int _white = 0xFFFFFFFF;
   static const Color text = Color(0xFF333333);
 

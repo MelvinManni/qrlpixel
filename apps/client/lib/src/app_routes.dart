@@ -1,5 +1,6 @@
 import 'package:client/src/screens/loading.dart';
 import 'package:client/src/screens/login.dart';
+import 'package:client/src/screens/signup.dart';
 import 'package:client/src/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -19,7 +20,7 @@ final rootRouter = GoRouter(
     GoRoute(
       path: "/signup",
       name: "signup",
-      builder: (context, state) => const SizedBox(),
+      builder: (context, state) => const SignupScreen(),
     ),
     GoRoute(
       path: "/forgot-password",

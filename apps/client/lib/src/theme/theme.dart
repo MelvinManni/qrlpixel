@@ -13,8 +13,8 @@ final ThemeData theme = ThemeData(
     bodyLarge: TextStyle(
       color: CustomPalette.text,
       fontFamily: "RedHatDisplay",
-      fontWeight: FontWeight.w500,
-      fontSize: 16,
+      fontWeight: FontWeight.w700,
+      fontSize: 24,
     ),
     bodyMedium: TextStyle(
       color: CustomPalette.text,
@@ -34,11 +34,11 @@ final ThemeData theme = ThemeData(
       foregroundColor: CustomPalette.white,
       textStyle: const TextStyle(
           fontFamily: "RedHatDisplay",
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.w600,
           fontSize: 14),
       minimumSize: const Size.fromHeight(48),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(3.33),
+        borderRadius: BorderRadius.circular(10),
       ),
     ).merge(ButtonStyle(
       backgroundColor: MaterialStateProperty.resolveWith<Color>(
@@ -68,6 +68,27 @@ final ThemeData theme = ThemeData(
       ),
     ),
     extendedPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+  ),
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      textStyle: const TextStyle(
+          fontFamily: "RedHatDisplay",
+          fontWeight: FontWeight.w600,
+          fontSize: 14),
+      minimumSize: const Size.fromHeight(48),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+    ).merge(ButtonStyle(
+      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+        (Set<MaterialState> states) {
+          if (states.contains(MaterialState.disabled)) {
+            return CustomPalette.inactive;
+          }
+          return CustomPalette.primary;
+        },
+      ),
+    )),
   ),
 );
 

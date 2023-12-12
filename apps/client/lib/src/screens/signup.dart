@@ -6,14 +6,14 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Align(
                     alignment: Alignment.center,
                     child: Image.asset(
-                      "assets/login_illustration.png",
+                      "assets/signup_illustration.png",
                       width: (MediaQuery.of(context).size.width - 32) * 0.7,
                     ),
                   ),
@@ -36,11 +36,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 20,
                   ),
                   Text(
-                    "Welcome back!",
+                    "Hello!",
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   Text(
-                    "Please login to your account.",
+                    "Create your account.",
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(
@@ -53,24 +53,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintText: "Enter your password",
                     obscureText: true,
                     marginBottom: 0,
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: RichText(
-                      text: TextSpan(
-                        text: "Forgot password?",
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            context.pushNamed('forgot-password');
-                          },
-                        style: Theme.of(context).textTheme.bodyMedium?.merge(
-                              const TextStyle(
-                                color: CustomPalette.link,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                      ),
-                    ),
                   ),
                   const SizedBox(
                     height: 20,
@@ -106,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const Text(
-                          "Login with google",
+                          "Register with google",
                           style: TextStyle(color: CustomPalette.text),
                         ),
                       ],
@@ -119,14 +101,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     alignment: Alignment.center,
                     child: RichText(
                       text: TextSpan(
-                          text: "Don't have an account? ",
+                          text: "Already have an account? ",
                           style: Theme.of(context).textTheme.bodyMedium,
                           children: [
                             TextSpan(
-                              text: "Sign up",
+                              text: "Login",
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
-                                  context.pushNamed('signup');
+                                  context.pushNamed('login');
                                 },
                               style:
                                   Theme.of(context).textTheme.bodyMedium?.merge(
