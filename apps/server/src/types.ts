@@ -20,8 +20,8 @@ export type ReqWithUser = Request & { user: User };
 export interface IGenerateBody {
   url: string;
   name: string;
-  description: string;
-  image64: string;
+  description?: string;
+  image64?: string;
   dotsColor?: string;
   edgeColor?: string;
   edgeDotColor?: string;
