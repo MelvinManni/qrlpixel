@@ -8,7 +8,10 @@ import 'package:client/src/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+
 final rootRouter = GoRouter(
+  navigatorKey: rootNavigatorKey,
   // initialLocation: '/app',
   routes: [
     GoRoute(

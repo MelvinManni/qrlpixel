@@ -61,6 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         InputField(
                           hintText: "Enter your email",
                           controller: emailController,
+                          validator: emailTextFieldValidator,
                         ),
                         InputField(
                           hintText: "Enter your password",

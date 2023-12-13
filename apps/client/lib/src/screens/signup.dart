@@ -1,10 +1,14 @@
+import 'package:client/main.dart';
+import 'package:client/src/utils.dart';
 import 'package:client/src/widgets/auto_scroll.dart';
 import 'package:client/src/theme/custom_palette.dart';
 import 'package:client/src/widgets/input_field.dart';
 import 'package:client/src/widgets/screen_padding.dart';
+import 'package:client/src/widgets/snack_alert.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -14,6 +18,10 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,13 +54,33 @@ class _SignupScreenState extends State<SignupScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  const InputField(
-                    hintText: "Enter your email",
-                  ),
-                  const InputField(
-                    hintText: "Enter your password",
-                    obscureText: true,
-                    marginBottom: 0,
+                  Form(
+                    key: formKey,
+                    child: Column(
+                      children: [
+                        InputField(
+                          hintText: "Enter your email",
+                          controller: emailController,
+                          validator: emailTextFieldValidator,
+                        ),
+                        InputField(
+                          hintText: "Enter your password",
+                          controller: passwordController,
+                          validator: (value) {
+                            if (checkIfValueIsEmptyStringOrNull(value)) {
+                              return "Password cannot be empty";
+                            }
+
+                            if (value!.length < 6) {
+                              return "Password must be at least 8 characters";
+                            }
+                            return null;
+                          },
+                          obscureText: true,
+                          marginBottom: 0,
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(
                     height: 20,
@@ -128,5 +156,56 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _handleSignup() async {
+    try {
+      if (formKey.currentState!.validate()) {
+        await supabase.auth.signUp(
+            password: passwordController.text, email: emailController.text);
+
+        if (mounted && supabase.auth.currentUser != null) {
+          clearStackAndNavigate(context, "/app");
+        }
+      }
+    } on AuthException catch (e) {
+      if (mounted) {
+        initSnackBar(context, e.message, SnackAlertType.error);
+      }
+    } catch (e) {
+      if (mounted) {
+        initSnackBar(context, "Something went wrong while logging in...",
+            SnackAlertType.error);
+      }
+    }
+  }
+
+  Future<void> _oAuthSignup() async {
+    try {
+      await supabase.auth.signInWithOAuth(
+        Provider.google,
+        redirectTo: "io.supabase.qrlpixel://login-callback",
+      );
+
+      if (mounted && supabase.auth.currentUser != null) {
+        clearStackAndNavigate(context, "/app");
+      }
+    } on AuthException catch (e) {
+      if (mounted) {
+        initSnackBar(context, e.message, SnackAlertType.error);
+      }
+    } catch (e) {
+      if (mounted) {
+        initSnackBar(context, "Something went wrong while logging in...",
+            SnackAlertType.error);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 }

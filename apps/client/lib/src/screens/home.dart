@@ -1,8 +1,10 @@
+import 'package:client/main.dart';
 import 'package:client/src/theme/custom_palette.dart';
 import 'package:client/src/utils.dart';
 import 'package:client/src/widgets/auto_scroll.dart';
 import 'package:client/src/widgets/input_field.dart';
 import 'package:client/src/widgets/screen_padding.dart';
+import 'package:client/src/widgets/snack_alert.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -153,8 +155,17 @@ class LogoutAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: context.canPop(),
       actions: [
         IconButton(
-            onPressed: () {
-              clearStackAndNavigate(context, '/login');
+            onPressed: () async {
+              try {
+                await supabase.auth
+                    .signOut()
+                    .then((_) => clearStackAndNavigate(context, '/login'));
+              } catch (e) {
+                if (context.mounted) {
+                  initSnackBar(context, "Oops... Something went wrong!",
+                      SnackAlertType.warning);
+                }
+              }
             },
             icon: const Icon(Icons.logout))
       ],
