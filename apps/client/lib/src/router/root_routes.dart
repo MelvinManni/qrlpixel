@@ -1,6 +1,5 @@
 import 'package:client/src/router/app_routes.dart';
 import 'package:client/src/screens/forgot_password.dart';
-import 'package:client/src/screens/loading.dart';
 import 'package:client/src/screens/login.dart';
 import 'package:client/src/screens/reset_password.dart';
 import 'package:client/src/screens/signup.dart';
@@ -12,12 +11,8 @@ final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final rootRouter = GoRouter(
   navigatorKey: rootNavigatorKey,
-  // initialLocation: '/app',
+  initialLocation: '/login',
   routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) => const LoadingScreen(),
-    ),
     GoRoute(
       path: '/login',
       name: "login",

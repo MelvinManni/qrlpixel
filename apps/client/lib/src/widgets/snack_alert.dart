@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 enum SnackAlertType { error, success, info, warning }
 
-initSnackBar(BuildContext context, String message, SnackAlertType type) {
+ScaffoldFeatureController<SnackBar, SnackBarClosedReason> initSnackBar(
+    BuildContext context, String message, SnackAlertType type) {
   final snackBar = SnackBar(
     padding: EdgeInsets.zero,
+    margin: const EdgeInsets.only(left: 10, right: 10, bottom: 40),
     behavior: SnackBarBehavior.floating,
     backgroundColor: Color(
       type == SnackAlertType.success
@@ -18,14 +20,12 @@ initSnackBar(BuildContext context, String message, SnackAlertType type) {
                       : 0xffFFF4E5,
     ),
     elevation: 0.5,
-    margin: EdgeInsets.only(
-        bottom: MediaQuery.of(context).size.height - 150, left: 5, right: 5),
     duration: const Duration(seconds: 2),
     content: Container(
       width: MediaQuery.of(context).size.width - 20,
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
       constraints: const BoxConstraints(
-        maxHeight: 100,
+        minHeight: 60,
       ),
       child: Text(
         message,
@@ -52,5 +52,5 @@ initSnackBar(BuildContext context, String message, SnackAlertType type) {
     ),
   );
 
-  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  return ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 const siteUrl = "io.supabase.qrlpixel";
+
 /// This function is used to clear the stack and navigate to a new route
 clearStackAndNavigate(BuildContext context, String routeName) {
   if (context.mounted) {
@@ -55,6 +56,17 @@ String? emailTextFieldValidator(value) {
     return "Please enter a valid email";
   }
 
+  return null;
+}
+
+String? passwordTextFieldValidator(value) {
+  if (checkIfValueIsEmptyStringOrNull(value)) {
+    return "Password cannot be empty";
+  }
+
+  if (value!.length < 6) {
+    return "Password must be at least 8 characters";
+  }
   return null;
 }
 

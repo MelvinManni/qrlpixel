@@ -66,16 +66,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         InputField(
                           hintText: "Enter your password",
                           controller: passwordController,
-                          validator: (value) {
-                            if (checkIfValueIsEmptyStringOrNull(value)) {
-                              return "Password cannot be empty";
-                            }
-
-                            if (value!.length < 6) {
-                              return "Password must be at least 8 characters";
-                            }
-                            return null;
-                          },
+                          validator: passwordTextFieldValidator,
                           obscureText: true,
                           marginBottom: 0,
                         ),
