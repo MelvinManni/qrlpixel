@@ -57,7 +57,7 @@ export const createQRCode = async (req: ReqWithUser, res: Response) => {
     });
 
     // upload to supabse stoorage
-    const { error: uploadError } = await supabaseClient.storage
+    const { data: storageData, error: uploadError } = await supabaseClient.storage
       .from('qrcode/images')
       .upload(`${randomStr}.png`, qrCode);
 
@@ -74,7 +74,7 @@ export const createQRCode = async (req: ReqWithUser, res: Response) => {
       url,
       name,
       description,
-      image_url: `${randomStr}.png`,
+      image_url: storageData.path,
       redirect_id: randomStr,
     });
 
