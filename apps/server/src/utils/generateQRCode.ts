@@ -1,4 +1,4 @@
-import QRCodeStyling from 'qr-code-styling';
+import { QRCodeCanvas } from '@loskir/styled-qr-code-node';
 
 interface IGenerateQRCode {
   redirectUrl: string;
@@ -15,7 +15,7 @@ export default async function ({
   edgeColor,
   edgeDotColor,
 }: IGenerateQRCode): Promise<Blob> {
-  const qrcode = new QRCodeStyling({
+  const qrcode = new QRCodeCanvas({
     width: 300,
     height: 300,
     data: redirectUrl,
@@ -43,7 +43,8 @@ export default async function ({
     },
   });
 
-  const blob = await qrcode.getRawData('png');
+  const buffer = await qrcode.toBuffer('png');
+  const blob = new Blob([buffer], { type: 'image/png' });
 
   //   retrun image blob
   return blob;
