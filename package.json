@@ -5,7 +5,7 @@
   "scripts": {
     "init-dbtypes": "supabase gen types typescript --project-id sjuqrwtxfuztuyzbviwr > ./apps/server/src/database.types.ts",
     "serve-server": "npx nx serve server",
-    "build-server": "npx nx build server",
+    "build-server": "npm install && npx nx build server",
     "start-server": "node ./dist/apps/server/main.js"
   },
   "private": true,
