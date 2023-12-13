@@ -78,122 +78,120 @@ class _AddNewQRCodeScreenState extends State<AddNewQRCodeScreen> {
             child: ScreenPadding(
               top: 30,
               bottom: 65,
-              child: Form(
-                key: formKey,
-                child: Column(
-                  children: [
-                    Text(
-                      "Empower Your URL with Personalized QR Codes: Easily Generate, Customize, and Share",
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge
-                          ?.copyWith(fontSize: 18),
-                    ),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    Form(
-                        child: Column(
-                      children: [
-                        InputField(
-                          label: "Name",
-                          hintText: "My Website",
-                          controller: nameController,
-                          validator: (value) {
-                            if (checkIfValueIsEmptyStringOrNull(value)) {
-                              return "QR Code name cannot be empty!";
-                            }
-                            return null;
-                          },
-                        ),
-                        InputField(
-                          label: "Description",
-                          hintText: "My website description",
-                          controller: descriptionController,
-                        ),
-                        InputField(
-                          label: "URL",
-                          hintText: "https://www.example.com",
-                          controller: urlController,
-                          onEditingComplete: () {
-                            setState(() {
-                              urlController.text =
-                                  appendHttpIfNotPresent(urlController.text);
-                            });
-                          },
-                          validator: (value) {
-                            if (checkIfValueIsEmptyStringOrNull(value)) {
-                              return "URL cannot be empty!";
-                            }
-
-                            if (!isValidUrl(value ?? "")) {
-                              return "Please enter a valid URL!";
-                            }
-                            return null;
-                          },
-                        ),
-                        Wrap(
-                          children: [
-                            ColorPicker(
-                              color: dots,
-                              setColor: (color) {
-                                setState(() {
-                                  dots = color;
-                                });
-                              },
-                              label: "Dots Color",
-                            ),
-                            ColorPicker(
-                              color: cornerDot,
-                              setColor: (color) {
-                                setState(() {
-                                  cornerDot = color;
-                                });
-                              },
-                              label: "Corner Dots Color",
-                            ),
-                            ColorPicker(
-                              color: cornerSquare,
-                              setColor: (color) {
-                                setState(() {
-                                  cornerSquare = color;
-                                });
-                              },
-                              label: "Corner Square Color",
-                            )
-                          ],
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 20),
-                          child: Divider(),
-                        ),
-                        const InputLabel(label: "Upload Logo/Image"),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: CustomImagePicker(
-                            setImage: (image) {
+              child: Column(
+                children: [
+                  Text(
+                    "Empower Your URL with Personalized QR Codes: Easily Generate, Customize, and Share",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(fontSize: 18),
+                  ),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  Form(
+                      key: formKey,
+                      child: Column(
+                        children: [
+                          InputField(
+                            label: "Name",
+                            hintText: "My Website",
+                            controller: nameController,
+                            validator: (value) {
+                              if (checkIfValueIsEmptyStringOrNull(value)) {
+                                return "QR Code name cannot be empty!";
+                              }
+                              return null;
+                            },
+                          ),
+                          InputField(
+                            label: "Description",
+                            hintText: "My website description",
+                            controller: descriptionController,
+                          ),
+                          InputField(
+                            label: "URL",
+                            hintText: "https://www.example.com",
+                            controller: urlController,
+                            onEditingComplete: () {
                               setState(() {
-                                imagePicked = image;
+                                urlController.text =
+                                    appendHttpIfNotPresent(urlController.text);
                               });
                             },
-                            imagePicked: imagePicked,
+                            validator: (value) {
+                              if (checkIfValueIsEmptyStringOrNull(value)) {
+                                return "URL cannot be empty!";
+                              }
+
+                              if (!isValidUrl(value ?? "")) {
+                                return "Please enter a valid URL!";
+                              }
+                              return null;
+                            },
                           ),
-                        ),
-                        const SizedBox(
-                          height: 40,
-                        ),
-                        CustomTextButton(
-                          loading: loading,
-                          onPressed: _generateQRCode,
-                          child: const Text("Generate QR Code"),
-                        )
-                      ],
-                    ))
-                  ],
-                ),
+                          Wrap(
+                            children: [
+                              ColorPicker(
+                                color: dots,
+                                setColor: (color) {
+                                  setState(() {
+                                    dots = color;
+                                  });
+                                },
+                                label: "Dots Color",
+                              ),
+                              ColorPicker(
+                                color: cornerDot,
+                                setColor: (color) {
+                                  setState(() {
+                                    cornerDot = color;
+                                  });
+                                },
+                                label: "Corner Dots Color",
+                              ),
+                              ColorPicker(
+                                color: cornerSquare,
+                                setColor: (color) {
+                                  setState(() {
+                                    cornerSquare = color;
+                                  });
+                                },
+                                label: "Corner Square Color",
+                              )
+                            ],
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 20),
+                            child: Divider(),
+                          ),
+                          const InputLabel(label: "Upload Logo/Image"),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: CustomImagePicker(
+                              setImage: (image) {
+                                setState(() {
+                                  imagePicked = image;
+                                });
+                              },
+                              imagePicked: imagePicked,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 40,
+                          ),
+                          CustomTextButton(
+                            loading: loading,
+                            onPressed: _generateQRCode,
+                            child: const Text("Generate QR Code"),
+                          )
+                        ],
+                      ))
+                ],
               ),
             ),
           ),
@@ -204,19 +202,20 @@ class _AddNewQRCodeScreenState extends State<AddNewQRCodeScreen> {
 
   Future<Map<String, dynamic>?> _getFormMap() async {
     try {
-      final img = imagePicked ?? XFile("assets/logo.png");
-      final imgBytes = await img.readAsBytes();
-      final image64 = base64Encode(imgBytes);
-
-      return {
+      final mapData = {
         "name": nameController.text,
         "description": descriptionController.text,
         "url": urlController.text,
-        "dots": dots.toHex(),
-        "cornerDot": cornerDot.toHex(),
-        "cornerSquare": cornerSquare.toHex(),
-        "imagePicked": image64
+        "dotsColor": dots.toHex(),
+        "edgeDotsColor": cornerDot.toHex(),
+        "edgeColor": cornerSquare.toHex()
       };
+      if (imagePicked != null) {
+        final bytes = await imagePicked!.readAsBytes();
+        final base64Image = "data:image/png;base64,${base64Encode(bytes)}";
+        mapData["image64"] = base64Image;
+      }
+      return mapData;
     } catch (e) {
       if (kDebugMode) print(e);
       return null;
