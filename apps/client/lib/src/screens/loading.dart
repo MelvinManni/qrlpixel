@@ -1,4 +1,6 @@
+import 'package:client/main.dart';
 import 'package:client/src/theme/custom_palette.dart';
+import 'package:client/src/utils.dart';
 import 'package:flutter/material.dart';
 
 class LoadingScreen extends StatelessWidget {
@@ -6,6 +8,9 @@ class LoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration.zero, () {
+      _handleAppInit(context);
+    });
     return Scaffold(
       backgroundColor: CustomPalette.primary,
       body: SafeArea(
@@ -36,5 +41,16 @@ class LoadingScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  _handleAppInit(BuildContext context) async {
+    final auth = supabase.auth;
+    bool sessionExpired = auth.currentSession?.isExpired ?? true;
+    if (sessionExpired && auth.currentUser == null) {
+      auth.signOut();
+      clearStackAndNavigate(context, "/login");
+    } else {
+      clearStackAndNavigate(context, "/app");
+    }
   }
 }

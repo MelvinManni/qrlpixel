@@ -34,4 +34,14 @@ String formatDate(dynamic date, [DateFormatEnum? format]) {
   return DateFormat.yMMMd().format(date).toString();
 }
 
+bool checkIfValueIsEmptyStringOrNull(String? a) {
+  if (a == null) {
+    return true;
+  }
+
+  return a.trim().isEmpty;
+}
+
+//
+//
 enum DateFormatEnum { short, long }

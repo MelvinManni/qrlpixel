@@ -1,11 +1,14 @@
+import 'package:client/main.dart';
 import 'package:client/src/utils.dart';
 import 'package:client/src/widgets/auto_scroll.dart';
 import 'package:client/src/theme/custom_palette.dart';
 import 'package:client/src/widgets/input_field.dart';
 import 'package:client/src/widgets/screen_padding.dart';
+import 'package:client/src/widgets/snack_alert.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,6 +18,10 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,13 +54,32 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  const InputField(
-                    hintText: "Enter your email",
-                  ),
-                  const InputField(
-                    hintText: "Enter your password",
-                    obscureText: true,
-                    marginBottom: 0,
+                  Form(
+                    key: formKey,
+                    child: Column(
+                      children: [
+                        InputField(
+                          hintText: "Enter your email",
+                          controller: emailController,
+                        ),
+                        InputField(
+                          hintText: "Enter your password",
+                          controller: passwordController,
+                          validator: (value) {
+                            if (checkIfValueIsEmptyStringOrNull(value)) {
+                              return "Password cannot be empty";
+                            }
+
+                            if (value!.length < 6) {
+                              return "Password must be at least 8 characters";
+                            }
+                            return null;
+                          },
+                          obscureText: true,
+                          marginBottom: 0,
+                        ),
+                      ],
+                    ),
                   ),
                   Align(
                     alignment: Alignment.centerRight,
@@ -77,10 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 20,
                   ),
                   TextButton(
-                      onPressed: () {
-                        clearStackAndNavigate(context, "/app");
-                      },
-                      child: const Text("Continue")),
+                      onPressed: _handleLogin, child: const Text("Continue")),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
                     child: Row(
@@ -96,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: _oAuthLogin,
                     style: ElevatedButton.styleFrom(
                         backgroundColor: CustomPalette.white),
                     child: Row(
@@ -151,5 +174,55 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _handleLogin() async {
+    try {
+      if (formKey.currentState!.validate()) {
+        await supabase.auth.signInWithPassword(
+            password: passwordController.text, email: emailController.text);
+
+        if (mounted && supabase.auth.currentUser != null) {
+          clearStackAndNavigate(context, "/app");
+        }
+      }
+    } on AuthException catch (e) {
+      if (mounted) {
+        initSnackBar(context, e.message, SnackAlertType.error);
+      }
+    } catch (e) {
+      if (mounted) {
+        initSnackBar(context, "Something went wrong while logging in...",
+            SnackAlertType.error);
+      }
+    }
+  }
+
+  Future<void> _oAuthLogin() async {
+    try {
+      await supabase.auth.signInWithOAuth(
+        Provider.google,
+      );
+
+      if (mounted && supabase.auth.currentUser != null) {
+        clearStackAndNavigate(context, "/app");
+      }
+    } on AuthException catch (e) {
+      if (mounted) {
+        initSnackBar(context, e.message, SnackAlertType.error);
+      }
+    } catch (e) {
+      if (mounted) {
+        initSnackBar(context, "Something went wrong while logging in...",
+            SnackAlertType.error);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
   }
 }
