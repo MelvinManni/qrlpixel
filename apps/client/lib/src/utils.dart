@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-const apiUrl = "https://qrlpixel.link/";
+const apiUrl = "https://qrlpixel.link";
 
 /// This function is used to clear the stack and navigate to a new route
 clearStackAndNavigate(BuildContext context, String routeName) {

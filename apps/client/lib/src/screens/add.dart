@@ -230,10 +230,11 @@ class _AddNewQRCodeScreenState extends State<AddNewQRCodeScreen> {
           loading = true;
         });
         final token = supabase.auth.currentSession?.accessToken;
-        final res = await HTTPServices.post("$apiUrl/v1/qrcode",
+        final res = await HTTPServices.post("$apiUrl/api/qrcode",
             body: body, token: token);
 
         final response = JSONServices.decode(res.body);
+        print(response);
 
         if (res.statusCode != 201) {
           if (mounted) {

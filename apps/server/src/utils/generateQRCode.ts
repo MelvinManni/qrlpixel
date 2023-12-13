@@ -1,4 +1,5 @@
 import { QRCodeCanvas } from '@loskir/styled-qr-code-node';
+import { Blob } from 'buffer';
 
 interface IGenerateQRCode {
   redirectUrl: string;
