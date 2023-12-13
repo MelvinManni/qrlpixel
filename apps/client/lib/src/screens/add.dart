@@ -222,6 +222,18 @@ class _AddNewQRCodeScreenState extends State<AddNewQRCodeScreen> {
     }
   }
 
+  void _resetFormData() {
+    nameController.clear();
+    descriptionController.clear();
+    urlController.clear();
+    setState(() {
+      imagePicked = null;
+      dots = CustomPalette.primary;
+      cornerDot = CustomPalette.primary;
+      cornerSquare = CustomPalette.primary;
+    });
+  }
+
   _generateQRCode() async {
     try {
       final body = await _getFormMap();
@@ -243,6 +255,7 @@ class _AddNewQRCodeScreenState extends State<AddNewQRCodeScreen> {
         } else {
           if (mounted) {
             initSnackBar(context, response["message"], SnackAlertType.success);
+            _resetFormData();
           }
         }
       }

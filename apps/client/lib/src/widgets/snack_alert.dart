@@ -22,6 +22,7 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> initSnackBar(
     elevation: 0.5,
     duration: const Duration(seconds: 2),
     content: Container(
+      alignment: Alignment.centerLeft,
       width: MediaQuery.of(context).size.width - 20,
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
       constraints: const BoxConstraints(
@@ -44,8 +45,8 @@ ScaffoldFeatureController<SnackBar, SnackBarClosedReason> initSnackBar(
                                   ? 0xffF2994A
                                   : 0xff000000,
                 ),
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
               ),
             ),
       ),

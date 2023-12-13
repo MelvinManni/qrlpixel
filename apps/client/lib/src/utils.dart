@@ -50,9 +50,7 @@ bool isValidEmail(String email) {
 }
 
 bool isValidUrl(String url) {
-  return RegExp(
-    r"^(http|https):\/\/[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+(\/[a-zA-Z0-9-]*)*(\?[a-zA-Z0-9-._%&=]*)?$",
-  ).hasMatch(url.toString().trim());
+  return Uri.parse(url.toString().trim()).isAbsolute;
 }
 
 String? emailTextFieldValidator(value) {
