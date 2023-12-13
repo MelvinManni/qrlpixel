@@ -10,14 +10,14 @@ import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final String? name = supabase.auth.currentUser?.userMetadata?["full_name"];
     return Scaffold(
-      appBar:  LogoutAppBar(
-        label: "Hello${ name != null ? ", ${name.split(" ")[0]}" : "" }!",
+      appBar: LogoutAppBar(
+        label: "Hello${name != null ? ", ${name.split(" ")[0]}" : ""}!",
       ),
       body: SafeArea(
         child: AutoScrollChild(
@@ -206,9 +206,15 @@ class ChartLegendRow extends StatelessWidget {
   }
 }
 
-class QRCodesList extends StatelessWidget {
+class QRCodesList extends StatefulWidget {
   const QRCodesList({super.key});
 
+  @override
+  State<QRCodesList> createState() => _QRCodesListState();
+}
+
+class _QRCodesListState extends State<QRCodesList> {
+  List<Map<String, dynamic>> qrcodes = [];
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -219,19 +225,34 @@ class QRCodesList extends StatelessWidget {
             Icons.search,
             color: CustomPalette.primary[50],
           ),
-          suffixIcon:
-              IconButton(onPressed: () {}, icon: const Icon(Icons.tune)),
         ),
         const SizedBox(height: 20),
-        ...List.generate(
-          10,
-          (index) => const Padding(
-            padding: EdgeInsets.only(bottom: 20),
-            child: QRCodeListItem(),
-          ),
-        ).toList()
+        ...qrcodes
+            .map(
+              (value) => const Padding(
+                padding: EdgeInsets.only(bottom: 20),
+                child: QRCodeListItem(),
+              ),
+            )
+            .toList()
       ],
     );
+  }
+
+  Future<void> getQRCodes() async {
+    try {
+      final user = supabase.auth.currentUser;
+      final value =
+          await supabase.from("qrcodes").select("*").eq("user", user?.id);
+      print(value.data);
+      setState(() {
+        qrcodes = value.data as List<Map<String, dynamic>>;
+      });
+    } catch (e) {
+      if (mounted) {
+        initSnackBar(context, "Something went wrong", SnackAlertType.warning);
+      }
+    }
   }
 }
 
