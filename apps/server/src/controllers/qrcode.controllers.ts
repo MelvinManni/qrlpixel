@@ -7,6 +7,9 @@ import { validateGenerateBody } from '../utils/validateBody';
 import { generateRedirectId } from '../utils/generateRedirectId';
 import generateQRCode from '../utils/generateQRCode';
 
+const SUPABASE_BUCKET_PATH =
+  'https://sjuqrwtxfuztuyzbviwr.supabase.co/storage/v1/object/public/qrcode/images/';
+
 export const createQRCode = async (req: ReqWithUser, res: Response) => {
   try {
     // validate body
@@ -75,7 +78,7 @@ export const createQRCode = async (req: ReqWithUser, res: Response) => {
       url,
       name,
       description,
-      image_url: `${process.env.SUPABASE_BUCKET_PATH ?? ''}${storageData.path}`,
+      image_url: SUPABASE_BUCKET_PATH + storageData.path,
       redirect_id: randomStr,
     });
 

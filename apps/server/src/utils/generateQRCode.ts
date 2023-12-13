@@ -14,7 +14,7 @@ export default async function ({
   dotsColor,
   edgeColor,
   edgeDotColor,
-}: IGenerateQRCode): Promise<Buffer> {
+}: IGenerateQRCode): Promise<Blob> {
   const qrcode = new QRCodeCanvas({
     width: 300,
     height: 300,
@@ -46,5 +46,5 @@ export default async function ({
   const buffer = await qrcode.toBuffer('png');
 
   //   retrun image blob
-  return buffer;
+  return new Blob([buffer], { type: 'image/png' });
 }
