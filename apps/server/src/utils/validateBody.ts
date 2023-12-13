@@ -13,23 +13,28 @@ export const validateGenerateBody = (body: IGenerateBody) => {
     return { isValid: false, message: 'Name is required' };
   }
 
-  if (validator.isEmpty(image64)) {
-    return { isValid: false, message: 'Image is required' };
-  }
-
-  if (testBase64Image(image64)) {
+  if (validator.isEmpty(image64 ?? '') && testBase64Image(image64)) {
     return { isValid: false, message: 'Image is not a valid base64 image' };
   }
 
-  if (!validator.isEmpty(body.dotsColor) && !isColorHex(body.dotsColor)) {
+  if (
+    !validator.isEmpty(body.dotsColor ?? '') &&
+    !isColorHex(body.dotsColor ?? '')
+  ) {
     return { isValid: false, message: 'Dots color is not a valid hex color' };
   }
 
-  if (!validator.isEmpty(body.edgeColor) && !isColorHex(body.edgeColor)) {
+  if (
+    !validator.isEmpty(body.edgeColor ?? '') &&
+    !isColorHex(body.edgeColor ?? '')
+  ) {
     return { isValid: false, message: 'Edge color is not a valid hex color' };
   }
 
-  if (!validator.isEmpty(body.edgeDotColor) && !isColorHex(body.edgeDotColor)) {
+  if (
+    !validator.isEmpty(body.edgeDotColor ?? '') &&
+    !isColorHex(body.edgeDotColor ?? '')
+  ) {
     return {
       isValid: false,
       message: 'Edge dot color is not a valid hex color',

@@ -62,6 +62,7 @@ export const createQRCode = async (req: ReqWithUser, res: Response) => {
       .upload(`${randomStr}.png`, qrCode);
 
     if (uploadError) {
+      
       return res
         .status(HTTPCODES.INTERNAL_SERVER_ERROR)
         .json({ message: 'Something went wrong generating QR code' });
