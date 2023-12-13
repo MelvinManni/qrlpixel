@@ -3,6 +3,6 @@ import { handleRedirect } from "../controllers/redirect.controllers";
 
 const router = Router();
 
-router.get("/:routeId", handleRedirect);
+router.get("/:redirectId", handleRedirect);
 
 export default router;

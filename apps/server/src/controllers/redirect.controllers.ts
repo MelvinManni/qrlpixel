@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { supabaseClient } from '../utils/supabase';
 import { HTTPCODES, QR_CODE_TABLE } from '../types';
 import { lookup } from 'geoip-country';
+import { isMobile } from '../utils/regex';
 
 export const handleRedirect = async (req: Request, res: Response) => {
   // get redirect id from params
@@ -29,27 +30,25 @@ export const handleRedirect = async (req: Request, res: Response) => {
     // get user ip
     const ip = req.socket.remoteAddress;
 
-    const { country } = lookup(ip);
+    const val = lookup(ip);
+    const country = val?.country ?? 'Unknown';
 
-    /**
-     * @todo get client device info Mobile/Desktop
-     */
-
-    const { error: scanError } = await supabaseClient.from('scan').insert([
-      {
-        qrcode: data.id,
-        ip,
-        country,
-      },
-    ]);
-
-    if (scanError) {
-      return res
-        .status(HTTPCODES.INTERNAL_SERVER_ERROR)
-        .json({ message: scanError.message });
-    }
-
-    //  redirect to url
+    const device = isMobile(req.headers['user-agent']) ? 'Mobile' : 'Desktop';
+    supabaseClient
+      .from('scan')
+      .insert([
+        {
+          qrcode: data.id,
+          ip,
+          country,
+          device,
+        },
+      ])
+      .then(undefined, (error) => {
+        if (error) {
+          console.log("Error! Couldn't insert scan data", error);
+        }
+      });
     res.redirect(data.url);
   } catch (error) {
     return res
