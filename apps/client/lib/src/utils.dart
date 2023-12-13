@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-const siteUrl = "io.supabase.qrlpixel";
+const apiUrl = "https://qrlpixel.link/";
 
 /// This function is used to clear the stack and navigate to a new route
 clearStackAndNavigate(BuildContext context, String routeName) {
@@ -49,6 +49,12 @@ bool isValidEmail(String email) {
       .hasMatch(email.toString().trim());
 }
 
+bool isValidUrl(String url) {
+  return RegExp(
+    r"^(http|https):\/\/[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+(\/[a-zA-Z0-9-]*)*(\?[a-zA-Z0-9-._%&=]*)?$",
+  ).hasMatch(url.toString().trim());
+}
+
 String? emailTextFieldValidator(value) {
   if (checkIfValueIsEmptyStringOrNull(value)) {
     return "Email cannot be empty";
@@ -68,6 +74,14 @@ String? passwordTextFieldValidator(value) {
     return "Password must be at least 8 characters";
   }
   return null;
+}
+
+String appendHttpIfNotPresent(String url) {
+  if (!url.startsWith("http://") && !url.startsWith("https://")) {
+    return "https://$url";
+  }
+
+  return url;
 }
 
 //

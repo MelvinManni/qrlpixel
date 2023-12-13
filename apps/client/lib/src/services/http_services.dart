@@ -9,7 +9,7 @@ class HTTPServices {
   }
 
   static post(String url, {Map<String, dynamic>? body, String? token}) async {
-    return http.post(
+    final res = await http.post(
       Uri.parse(url),
       headers: {
         "authorization": "Bearer $token",
@@ -17,5 +17,7 @@ class HTTPServices {
       },
       body: JSONServices.encode(body ?? {}),
     );
+
+    return res;
   }
 }
