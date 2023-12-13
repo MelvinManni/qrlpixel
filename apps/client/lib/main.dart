@@ -1,7 +1,13 @@
 import 'package:client/src/router/root_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+Future<void> main() async {
+    await Supabase.initialize(
+    url: 'https://sjuqrwtxfuztuyzbviwr.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqdXFyd3R4ZnV6dHV5emJ2aXdyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDIzMjI5NDgsImV4cCI6MjAxNzg5ODk0OH0.VWfdM4Qc3SRKbA5M-93DZ1yse7qSlYer7Q-0CMHvH1U',
+  );
+
   runApp(const MyApp());
 }
 
@@ -19,3 +25,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+final supabase = Supabase.instance.client;
+
