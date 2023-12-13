@@ -17,7 +17,7 @@ class ScreenPadding extends StatelessWidget {
           left: horizontal ?? 16,
           right: horizontal ?? 16,
           top: top ?? 0,
-          bottom: bottom ?? 10),
+          bottom: bottom ?? 40),
       child: child,
     );
   }

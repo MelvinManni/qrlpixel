@@ -202,6 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await supabase.auth.signInWithOAuth(
         Provider.google,
+        redirectTo: "io.supabase.qrlpixel://login-callback",
       );
 
       if (mounted && supabase.auth.currentUser != null) {

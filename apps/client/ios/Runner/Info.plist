@@ -58,7 +58,7 @@
 				<string>Editor</string>
 				<key>CFBundleURLSchemes</key>
 				<array>
-					<string>io.supabase.qrlpixel://login-callback</string>
+					<string>io.supabase.qrlpixel</string>
 				</array>
 			</dict>
 		</array>
