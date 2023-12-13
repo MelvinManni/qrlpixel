@@ -4,8 +4,8 @@
   "license": "MIT",
   "scripts": {
     "init-dbtypes": "supabase gen types typescript --project-id sjuqrwtxfuztuyzbviwr > ./apps/server/src/database.types.ts",
-    "serve-server": "npx nx serve server",
-    "build-server": "npm install && npx nx build server",
+    "serve-server": "npx nx serve server --host=0.0.0.0",
+    "build-server": "npm install && npx nx build server --host=0.0.0.0",
     "start-server": "node ./dist/apps/server/main.js"
   },
   "private": true,
