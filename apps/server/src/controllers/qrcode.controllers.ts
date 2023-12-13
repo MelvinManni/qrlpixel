@@ -62,16 +62,16 @@ export const createQRCode = async (req: ReqWithUser, res: Response) => {
       .upload(`${randomStr}.png`, qrCode);
 
     if (uploadError) {
-      console.log('\n\n------ begin:  ------')
-      console.log('uploadError: ', uploadError)
-      console.log('------ end:  ------\n\n')
       return res
         .status(HTTPCODES.INTERNAL_SERVER_ERROR)
-        .json({ message: 'Something went wrong generating QR code' });
+        .json({
+          message:
+            uploadError.message ?? 'Something went wrong generating QR code',
+        });
     }
 
     // save to db
-    await supabaseClient.from('qrcode').insert({
+    const { error: dbError } = await supabaseClient.from('qrcode').insert({
       user_id: req.user.id,
       url,
       name,
@@ -79,6 +79,12 @@ export const createQRCode = async (req: ReqWithUser, res: Response) => {
       image_url: `${randomStr}.png`,
       redirect_id: randomStr,
     });
+
+    if (dbError) {
+      res.status(HTTPCODES.INTERNAL_SERVER_ERROR).json({
+        message: dbError.message ?? 'Something went wrong saving QR code',
+      });
+    }
 
     return res.status(HTTPCODES.CREATED).json({ message: 'QR code created!' });
   } catch (error) {
