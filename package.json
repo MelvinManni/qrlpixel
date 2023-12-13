@@ -4,7 +4,9 @@
   "license": "MIT",
   "scripts": {
     "init-dbtypes": "supabase gen types typescript --project-id sjuqrwtxfuztuyzbviwr > ./apps/server/src/database.types.ts",
-    "start-server": "nx serve server"
+    "serve-server": "nx serve server",
+    "build-server": "nx build server",
+    "start-server": "node ./dist/apps/server/main.js"
   },
   "private": true,
   "dependencies": {
