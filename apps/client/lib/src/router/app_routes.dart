@@ -1,4 +1,5 @@
 import 'package:client/src/screens/add.dart';
+import 'package:client/src/screens/analysis.dart';
 import 'package:client/src/screens/home.dart';
 import 'package:client/src/screens/qrcode_item.dart';
 import 'package:client/src/theme/custom_palette.dart';
@@ -19,7 +20,7 @@ final appShellRoute = ShellRoute(
     ),
     GoRoute(
       path: '/app/analysis',
-      builder: (context, state) => const Placeholder(),
+      builder: (context, state) => const AnalysisScreen(),
     ),
     GoRoute(
       path: "/app/qrcode/:id",
