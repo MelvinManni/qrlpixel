@@ -48,129 +48,134 @@ class HomeScreen extends StatelessWidget {
                   .ceilToDouble();
           final double totalPercentage =
               (100 - uniquePercentage).ceilToDouble();
-          return AutoScrollChild(
-              controller: appServices.pagination.scrollController,
-              child: Material(
-                color: CustomPalette.white,
-                child: ScreenPadding(
-                  child: Column(
-                    children: [
-                      Container(
-                          padding: const EdgeInsets.only(
-                              top: 26, left: 33, right: 33),
-                          decoration: BoxDecoration(
-                            color: CustomPalette.primary[200],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Skeletonizer(
-                            enabled: appServices.userSummaryLoading,
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "${totalScans.toInt()} Scans",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium
-                                                ?.copyWith(
-                                                  fontSize: 24,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: CustomPalette.white,
-                                                ),
-                                          ),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              ChartLegendRow(
-                                                color: CustomPalette.secondary,
-                                                label: "$scans Scans",
-                                              ),
-                                              ChartLegendRow(
-                                                color: CustomPalette.success,
-                                                label:
-                                                    "${uniqueScans.toInt()} Unique Scans",
-                                              )
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        width: 120,
-                                        height: 120,
-                                        child: AspectRatio(
-                                          aspectRatio: 1,
-                                          child: PieChart(
-                                            PieChartData(
-                                              sections: [
-                                                PieChartSectionData(
-                                                  color: CustomPalette.success,
-                                                  value: uniqueScans,
-                                                  title: "$uniquePercentage%",
-                                                  // radius: 50,
-                                                  titleStyle: Theme.of(context)
-                                                      .textTheme
-                                                      .bodySmall
-                                                      ?.copyWith(
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                ),
-                                                PieChartSectionData(
-                                                  color:
-                                                      CustomPalette.secondary,
-                                                  value: scans.toDouble(),
-                                                  title: "$totalPercentage%",
-                                                  // radius: 50,
-                                                  titleStyle: Theme.of(context)
-                                                      .textTheme
-                                                      .bodySmall
-                                                      ?.copyWith(
-                                                          fontWeight:
-                                                              FontWeight.bold),
-                                                ),
-                                              ],
-                                              centerSpaceRadius: 20,
-                                              sectionsSpace: 0,
+          return RefreshIndicator(
+            onRefresh: () async {
+              await appServices.refreshApp();
+            },
+            child: AutoScrollChild(
+                controller: appServices.pagination.scrollController,
+                child: Material(
+                  color: CustomPalette.white,
+                  child: ScreenPadding(
+                    child: Column(
+                      children: [
+                        Container(
+                            padding: const EdgeInsets.only(
+                                top: 26, left: 33, right: 33),
+                            decoration: BoxDecoration(
+                              color: CustomPalette.primary[200],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Skeletonizer(
+                              enabled: appServices.userSummaryLoading,
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "${totalScans.toInt()} Scans",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.copyWith(
+                                                    fontSize: 24,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: CustomPalette.white,
+                                                  ),
                                             ),
-                                            swapAnimationDuration:
-                                                const Duration(
-                                                    milliseconds:
-                                                        150), // Optional
-                                            swapAnimationCurve: Curves.linear,
-                                          ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                ChartLegendRow(
+                                                  color: CustomPalette.secondary,
+                                                  label: "$scans Scans",
+                                                ),
+                                                ChartLegendRow(
+                                                  color: CustomPalette.success,
+                                                  label:
+                                                      "${uniqueScans.toInt()} Unique Scans",
+                                                )
+                                              ],
+                                            )
+                                          ],
                                         ),
-                                      )
-                                    ],
-                                  ),
-                                  Container(
-                                    margin: const EdgeInsets.only(top: 20),
-                                    padding: const EdgeInsets.all(20),
-                                    decoration: BoxDecoration(
-                                      color: CustomPalette.primary,
-                                      borderRadius: BorderRadius.circular(8),
+                                        SizedBox(
+                                          width: 120,
+                                          height: 120,
+                                          child: AspectRatio(
+                                            aspectRatio: 1,
+                                            child: PieChart(
+                                              PieChartData(
+                                                sections: [
+                                                  PieChartSectionData(
+                                                    color: CustomPalette.success,
+                                                    value: uniqueScans,
+                                                    title: "$uniquePercentage%",
+                                                    // radius: 50,
+                                                    titleStyle: Theme.of(context)
+                                                        .textTheme
+                                                        .bodySmall
+                                                        ?.copyWith(
+                                                            fontWeight:
+                                                                FontWeight.bold),
+                                                  ),
+                                                  PieChartSectionData(
+                                                    color:
+                                                        CustomPalette.secondary,
+                                                    value: scans.toDouble(),
+                                                    title: "$totalPercentage%",
+                                                    // radius: 50,
+                                                    titleStyle: Theme.of(context)
+                                                        .textTheme
+                                                        .bodySmall
+                                                        ?.copyWith(
+                                                            fontWeight:
+                                                                FontWeight.bold),
+                                                  ),
+                                                ],
+                                                centerSpaceRadius: 20,
+                                                sectionsSpace: 0,
+                                              ),
+                                              swapAnimationDuration:
+                                                  const Duration(
+                                                      milliseconds:
+                                                          150), // Optional
+                                              swapAnimationCurve: Curves.linear,
+                                            ),
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                  )
-                                ]),
-                          )),
-                      const SizedBox(height: 80),
-                      QRCodesList(
-                        appServices: appServices,
-                      )
-                    ],
+                                    Container(
+                                      margin: const EdgeInsets.only(top: 20),
+                                      padding: const EdgeInsets.all(20),
+                                      decoration: BoxDecoration(
+                                        color: CustomPalette.primary,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    )
+                                  ]),
+                            )),
+                        const SizedBox(height: 80),
+                        QRCodesList(
+                          appServices: appServices,
+                        )
+                      ],
+                    ),
                   ),
-                ),
-              ));
+                )),
+          );
         }),
       ),
     );

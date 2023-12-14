@@ -208,8 +208,8 @@ class AppServices with ChangeNotifier {
     }
   }
 
-  loadApp() {
-    Future.wait([
+  Future<void> refreshApp() async {
+    await Future.wait([
       getUserSummaryChart(),
       getUserSummary(),
       getQRCodes(),
