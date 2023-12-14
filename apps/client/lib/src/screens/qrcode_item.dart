@@ -1,4 +1,4 @@
-import 'package:client/main.dart';
+import 'package:client/src/services/app_services.dart';
 import 'package:client/src/theme/custom_palette.dart';
 import 'package:client/src/utils.dart';
 import 'package:client/src/widgets/auto_scroll.dart';
@@ -7,39 +7,27 @@ import 'package:client/src/widgets/input_field.dart';
 import 'package:client/src/widgets/screen_padding.dart';
 import 'package:client/src/widgets/snack_alert.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class QRCodeItemScreen extends StatefulWidget {
+class QRCodeItemScreen extends StatelessWidget {
   const QRCodeItemScreen({super.key, this.id});
 
   final String? id;
 
   @override
-  State<QRCodeItemScreen> createState() => _QRCodeItemScreenState();
-}
-
-class _QRCodeItemScreenState extends State<QRCodeItemScreen> {
-  dynamic qrcode;
-  bool isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getQRCode(callback: (value) {
-        setState(() {
-          qrcode = value;
-        });
+  Widget build(BuildContext context) {
+    Future.delayed(Duration.zero, () {
+      final appServices = Provider.of<AppServices>(context, listen: false);
+      appServices.getQRCode(id ?? "", error: (_) {
+        if (context.mounted) {
+          initSnackBar(context, "Something went wrong", SnackAlertType.warning);
+        }
       });
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
@@ -47,155 +35,122 @@ class _QRCodeItemScreenState extends State<QRCodeItemScreen> {
             context.canPop() ? context.pop() : context.go('/app');
           },
         ),
-        title: Text(qrcode?["name"] ?? widget.id ?? ""),
+        title: Consumer<AppServices>(builder: (_, appServices, __) {
+          final qrcode = appServices.qrcode.details;
+          print(qrcode.toString());
+          return Text(qrcode?["name"] ?? id ?? "");
+        }),
       ),
       body: SafeArea(
         child: AutoScrollChild(
-          child: Skeletonizer(
-            enabled: isLoading,
-            child: Material(
-              color: CustomPalette.white[950],
-              child: ScreenPadding(
-                top: 20,
-                child: Column(
-                  children: [
-                    Image.network(
-                      qrcode?["image_url"] ?? "",
-                      errorBuilder: (_, __, ___) => Image.asset(
-                        'assets/logo.png',
-                        width: 300,
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    ChartDetails(
-                      id: widget.id,
-                    ),
-                    const SizedBox(height: 30),
-                    Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
-                          color: CustomPalette.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color:
-                                  CustomPalette.primary[50]!.withOpacity(0.1),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            )
-                          ]),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 20,
-                        horizontal: 10,
-                      ),
-                      child: Column(
-                        children: [
-                          qrcode?["name"] == null
-                              ? const SizedBox.shrink()
-                              : StatsCol(label: "Name", value: qrcode?["name"]),
-                          checkIfValueIsEmptyStringOrNull(
-                                  qrcode?["description"])
-                              ? const SizedBox.shrink()
-                              : StatsCol(
-                                  label: "Description",
-                                  value: qrcode?["description"]),
-                          qrcode?["url"] == null
-                              ? const SizedBox.shrink()
-                              : StatsCol(
-                                  label: "URL",
-                                  value: qrcode?["url"],
-                                  isUrl: true),
-                          const SizedBox(
-                            height: 10,
+          child: Consumer<AppServices>(builder: (_, appServices, __) {
+            final qrcode = appServices.qrcode.details;
+            return Skeletonizer(
+              enabled: appServices.qrCodeLoading,
+              child: Material(
+                color: CustomPalette.white[950],
+                child: ScreenPadding(
+                    top: 20,
+                    child: Column(
+                      children: [
+                        Image.network(
+                          qrcode?["image_url"] ?? "",
+                          errorBuilder: (_, __, ___) => Image.asset(
+                            'assets/logo.png',
+                            width: 300,
                           ),
-                          Row(
+                        ),
+                        const SizedBox(height: 30),
+                        const ChartDetails(),
+                        const SizedBox(height: 30),
+                        Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(4),
+                              color: CustomPalette.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: CustomPalette.primary[50]!
+                                      .withOpacity(0.1),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                )
+                              ]),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 20,
+                            horizontal: 10,
+                          ),
+                          child: Column(
                             children: [
-                              Expanded(
-                                  child: StatsCol(
-                                      label: "Scans",
-                                      value:
-                                          qrcode?["total_scans"]?.toString() ??
+                              qrcode?["name"] == null
+                                  ? const SizedBox.shrink()
+                                  : StatsCol(
+                                      label: "Name", value: qrcode?["name"]),
+                              checkIfValueIsEmptyStringOrNull(
+                                      qrcode?["description"])
+                                  ? const SizedBox.shrink()
+                                  : StatsCol(
+                                      label: "Description",
+                                      value: qrcode?["description"]),
+                              qrcode?["url"] == null
+                                  ? const SizedBox.shrink()
+                                  : StatsCol(
+                                      label: "URL",
+                                      value: qrcode?["url"],
+                                      isUrl: true),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                      child: StatsCol(
+                                          label: "Scans",
+                                          value: qrcode?["total_scans"]
+                                                  ?.toString() ??
                                               "0",
-                                      isBadge: true)),
-                              Expanded(
-                                  child: StatsCol(
-                                      label: "Unique Scans",
-                                      value:
-                                          qrcode?["unique_scans"]?.toString() ??
+                                          isBadge: true)),
+                                  Expanded(
+                                      child: StatsCol(
+                                          label: "Unique Scans",
+                                          value: qrcode?["unique_scans"]
+                                                  ?.toString() ??
                                               "0",
-                                      isBadge: true)),
+                                          isBadge: true)),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                      child: StatsCol(
+                                          label: "Mobile",
+                                          value: qrcode?["mobile_count"]
+                                                  ?.toString() ??
+                                              "0",
+                                          isBadge: true)),
+                                  Expanded(
+                                      child: StatsCol(
+                                          label: "Desktop",
+                                          value: qrcode?["desktop_count"]
+                                                  ?.toString() ??
+                                              "0",
+                                          isBadge: true)),
+                                ],
+                              ),
+                              StatsCol(
+                                  label: "Top Location",
+                                  value: qrcode?["top_location"] ?? "",
+                                  isBadge: true)
                             ],
                           ),
-                          Row(
-                            children: [
-                              Expanded(
-                                  child: StatsCol(
-                                      label: "Mobile",
-                                      value:
-                                          qrcode?["mobile_count"]?.toString() ??
-                                              "0",
-                                      isBadge: true)),
-                              Expanded(
-                                  child: StatsCol(
-                                      label: "Desktop",
-                                      value: qrcode?["desktop_count"]
-                                              ?.toString() ??
-                                          "0",
-                                      isBadge: true)),
-                            ],
-                          ),
-                          StatsCol(
-                              label: "Top Location",
-                              value: qrcode?["top_location"] ?? "",
-                              isBadge: true)
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+                        )
+                      ],
+                    )),
               ),
-            ),
-          ),
+            );
+          }),
         ),
       ),
     );
-  }
-
-  Future<void> getQRCode({Function(dynamic)? callback}) async {
-    try {
-      setState(() {
-        isLoading = true;
-      });
-      final user = supabase.auth.currentUser;
-      final value = await supabase
-          .from("qrcode_details")
-          .select("*")
-          .eq("user", user?.id)
-          .eq("redirect_id", widget.id)
-          .maybeSingle();
-
-      if (value == null) {
-        if (mounted) {
-          initSnackBar(context, "No QR Code found", SnackAlertType.warning);
-          Future.delayed(const Duration(seconds: 2), () {
-            context.canPop() ? context.pop() : context.go('/app');
-          });
-        }
-        return;
-      } else {
-        Future.delayed(const Duration(seconds: 1), () {
-          setState(() {
-            isLoading = false;
-          });
-        });
-      }
-
-      callback?.call(value);
-    } catch (e) {
-      if (kDebugMode) print(e);
-      if (mounted) {
-        initSnackBar(context, "Something went wrong", SnackAlertType.warning);
-      }
-    }
   }
 }
 
@@ -269,50 +224,8 @@ class StatsCol extends StatelessWidget {
   }
 }
 
-class ChartDetails extends StatefulWidget {
-  const ChartDetails({super.key, this.id});
-
-  final String? id;
-
-  @override
-  State<ChartDetails> createState() => _ChartDetailsState();
-}
-
-class _ChartDetailsState extends State<ChartDetails> {
-  List<Color> gradientColors = [
-    CustomPalette.primary,
-    CustomPalette.secondary,
-  ];
-  double maxY = 0;
-  List<FlSpot> spots = [];
-  bool isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getChartData(callback: (value) {
-        print(value);
-        final data = value as List<dynamic>;
-        double max = 0;
-        List<FlSpot> tempSpot = [];
-        for (var i = 0; i < data.length; i++) {
-          final item = data[i];
-          final y = (item["scans_count"] as int).toDouble();
-          final x = (item["month"] as int).toDouble();
-          final spot = FlSpot(x, y);
-          tempSpot.add(spot);
-          if (y > max) {
-            max = y;
-          }
-        }
-        setState(() {
-          spots = tempSpot;
-          maxY = max;
-        });
-      });
-    });
-  }
+class ChartDetails extends StatelessWidget {
+  const ChartDetails({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -332,16 +245,20 @@ class _ChartDetailsState extends State<ChartDetails> {
                   top: 24,
                   bottom: 12,
                 ),
-                child: LineChart(
-                  mainData(),
-                ),
+                child: Consumer<AppServices>(builder: (_, appServices, __) {
+                  return LineChart(
+                    mainData(appServices.qrcode.chart, appServices.qrcode.maxY,
+                        context),
+                  );
+                }),
               ),
             ),
           ),
         ));
   }
 
-  Widget bottomTitleWidgets(double value, TitleMeta meta) {
+  Widget bottomTitleWidgets(
+      double value, TitleMeta meta, BuildContext context) {
     final style = Theme.of(context)
         .textTheme
         .bodySmall
@@ -395,7 +312,7 @@ class _ChartDetailsState extends State<ChartDetails> {
     );
   }
 
-  Widget leftTitleWidgets(num value, TitleMeta meta) {
+  Widget leftTitleWidgets(num value, TitleMeta meta, BuildContext context) {
     final style = Theme.of(context).textTheme.bodySmall?.copyWith(
           fontWeight: FontWeight.w500,
         );
@@ -403,9 +320,12 @@ class _ChartDetailsState extends State<ChartDetails> {
     return CompactNumber(number: value, style: style, align: TextAlign.left);
   }
 
-  LineChartData mainData() {
-    print(spots);
-    print(maxY);
+  LineChartData mainData(
+      List<FlSpot> spots, double maxY, BuildContext context) {
+    final List<Color> gradientColors = [
+      CustomPalette.primary,
+      CustomPalette.secondary,
+    ];
     return LineChartData(
       gridData: FlGridData(
         show: true,
@@ -438,14 +358,16 @@ class _ChartDetailsState extends State<ChartDetails> {
             showTitles: true,
             reservedSize: 30,
             interval: 1,
-            getTitlesWidget: bottomTitleWidgets,
+            getTitlesWidget: (val, meta) =>
+                bottomTitleWidgets(val, meta, context),
           ),
         ),
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
             interval: 100,
-            getTitlesWidget: leftTitleWidgets,
+            getTitlesWidget: (val, meta) =>
+                leftTitleWidgets(val, meta, context),
             reservedSize: 30,
           ),
         ),
@@ -483,20 +405,20 @@ class _ChartDetailsState extends State<ChartDetails> {
     );
   }
 
-  Future<void> _getChartData({Function(dynamic)? callback}) async {
-    try {
-      final res = await supabase
-          .from('scans_data_with_month_year')
-          .select('*')
-          .eq('redirect_id', widget.id);
-      callback?.call(res);
-    } catch (e) {
-      if (kDebugMode) print(e);
-      if (mounted) {
-        initSnackBar(context, "Something went wrong", SnackAlertType.warning);
-      }
-    }
-  }
+  // Future<void> _getChartData({Function(dynamic)? callback}) async {
+  //   try {
+  //     final res = await supabase
+  //         .from('scans_data_with_month_year')
+  //         .select('*')
+  //         .eq('redirect_id', widget.id);
+  //     callback?.call(res);
+  //   } catch (e) {
+  //     if (kDebugMode) print(e);
+  //     if (mounted) {
+  //       initSnackBar(context, "Something went wrong", SnackAlertType.warning);
+  //     }
+  //   }
+  // }
 }
 
 class Accordion extends StatefulWidget {
