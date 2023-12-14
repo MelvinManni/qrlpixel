@@ -28,7 +28,7 @@ export const handleRedirect = async (req: Request, res: Response) => {
     data as QR_CODE_TABLE;
 
     // get user ip
-    const ip = req.socket.remoteAddress;
+    const ip = req.ip ?? req.socket.remoteAddress ?? '';
 
     const val = lookup(ip);
     const country = val?.country ?? 'Unknown';
