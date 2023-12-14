@@ -7,6 +7,7 @@ import { validateGenerateBody } from '../utils/validateBody';
 import { generateRedirectId } from '../utils/generateRedirectId';
 import generateQRCode from '../utils/generateQRCode';
 import validator from 'validator';
+import base64toBlob from '../utils/base64ToBlob';
 
 const SUPABASE_BUCKET_PATH =
   'https://sjuqrwtxfuztuyzbviwr.supabase.co/storage/v1/object/public/qrcode/images/';
@@ -78,10 +79,11 @@ export const createQRCode = async (req: ReqWithUser, res: Response) => {
     let logo: string | undefined;
 
     if (!validator.isEmpty(image64 ?? '')) {
+      const imgBlob = base64toBlob(image64 ?? '');
       // upload  the logo to stoorage
       const { data: logoData, error: logoError } = await supabaseClient.storage
         .from('qrcode/logos')
-        .upload(`${randomStr}.png`, Buffer.from(image64, 'base64'));
+        .upload(`${randomStr}.png`, imgBlob);
 
       if (logoError) {
         return res.status(HTTPCODES.INTERNAL_SERVER_ERROR).json({
