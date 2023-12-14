@@ -3,7 +3,6 @@ import 'package:client/src/theme/custom_palette.dart';
 import 'package:client/src/utils.dart';
 import 'package:client/src/widgets/auto_scroll.dart';
 import 'package:client/src/widgets/input_field.dart';
-import 'package:client/src/widgets/mock_qr_code.dart';
 import 'package:client/src/widgets/screen_padding.dart';
 import 'package:client/src/widgets/snack_alert.dart';
 import 'package:fl_chart/fl_chart.dart';
