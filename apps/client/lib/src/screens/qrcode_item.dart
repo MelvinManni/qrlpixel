@@ -2,6 +2,7 @@ import 'package:client/main.dart';
 import 'package:client/src/theme/custom_palette.dart';
 import 'package:client/src/utils.dart';
 import 'package:client/src/widgets/auto_scroll.dart';
+import 'package:client/src/widgets/compact_number.dart';
 import 'package:client/src/widgets/input_field.dart';
 import 'package:client/src/widgets/screen_padding.dart';
 import 'package:client/src/widgets/snack_alert.dart';
@@ -60,10 +61,15 @@ class _QRCodeItemScreenState extends State<QRCodeItemScreen> {
                   children: [
                     Image.network(
                       qrcode?["image_url"] ?? "",
-                      errorBuilder: (_, __, ___) =>  Image.asset('assets/logo.png', width: 300,),
+                      errorBuilder: (_, __, ___) => Image.asset(
+                        'assets/logo.png',
+                        width: 300,
+                      ),
                     ),
                     const SizedBox(height: 30),
-                    const ChartDetails(),
+                    ChartDetails(
+                      id: widget.id,
+                    ),
                     const SizedBox(height: 30),
                     Container(
                       decoration: BoxDecoration(
@@ -264,9 +270,9 @@ class StatsCol extends StatelessWidget {
 }
 
 class ChartDetails extends StatefulWidget {
-  const ChartDetails({
-    super.key,
-  });
+  const ChartDetails({super.key, this.id});
+
+  final String? id;
 
   @override
   State<ChartDetails> createState() => _ChartDetailsState();
@@ -277,23 +283,58 @@ class _ChartDetailsState extends State<ChartDetails> {
     CustomPalette.primary,
     CustomPalette.secondary,
   ];
+  double maxY = 0;
+  List<FlSpot> spots = [];
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _getChartData(callback: (value) {
+        print(value);
+        final data = value as List<dynamic>;
+        double max = 0;
+        List<FlSpot> tempSpot = [];
+        for (var i = 0; i < data.length; i++) {
+          final item = data[i];
+          final y = (item["scans_count"] as int).toDouble();
+          final x = (item["month"] as int).toDouble();
+          final spot = FlSpot(x, y);
+          tempSpot.add(spot);
+          if (y > max) {
+            max = y;
+          }
+        }
+        setState(() {
+          spots = tempSpot;
+          maxY = max;
+        });
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Accordion(
         label: "Scan Chart",
-        child: SizedBox(
-          height: 200,
-          child: AspectRatio(
-            aspectRatio: 1.70,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                right: 18,
-                left: 12,
-                top: 24,
-                bottom: 12,
-              ),
-              child: LineChart(
-                mainData(),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            height: 300,
+            width: 500,
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  right: 18,
+                  left: 12,
+                  top: 24,
+                  bottom: 12,
+                ),
+                child: LineChart(
+                  mainData(),
+                ),
               ),
             ),
           ),
@@ -301,19 +342,47 @@ class _ChartDetailsState extends State<ChartDetails> {
   }
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    final style = Theme.of(context).textTheme.bodySmall?.copyWith(
-          fontWeight: FontWeight.w500,
-        );
+    final style = Theme.of(context)
+        .textTheme
+        .bodySmall
+        ?.copyWith(fontWeight: FontWeight.w500, fontSize: 10);
     Widget text;
     switch (value.toInt()) {
+      case 1:
+        text = Text('JAN', style: style);
+        break;
       case 2:
+        text = Text('FEB', style: style);
+        break;
+      case 3:
         text = Text('MAR', style: style);
         break;
+      case 4:
+        text = Text('APR', style: style);
+        break;
       case 5:
+        text = Text('MAY', style: style);
+        break;
+      case 6:
         text = Text('JUN', style: style);
         break;
+      case 7:
+        text = Text('JUL', style: style);
+        break;
       case 8:
+        text = Text('AUG', style: style);
+        break;
+      case 9:
         text = Text('SEP', style: style);
+        break;
+      case 10:
+        text = Text('OCT', style: style);
+        break;
+      case 11:
+        text = Text('NOV', style: style);
+        break;
+      case 12:
+        text = Text('DEC', style: style);
         break;
       default:
         text = Text('', style: style);
@@ -326,29 +395,17 @@ class _ChartDetailsState extends State<ChartDetails> {
     );
   }
 
-  Widget leftTitleWidgets(double value, TitleMeta meta) {
+  Widget leftTitleWidgets(num value, TitleMeta meta) {
     final style = Theme.of(context).textTheme.bodySmall?.copyWith(
           fontWeight: FontWeight.w500,
         );
-    String text;
-    switch (value.toInt()) {
-      case 1:
-        text = '10K';
-        break;
-      case 3:
-        text = '30k';
-        break;
-      case 5:
-        text = '50k';
-        break;
-      default:
-        return Container();
-    }
 
-    return Text(text, style: style, textAlign: TextAlign.left);
+    return CompactNumber(number: value, style: style, align: TextAlign.left);
   }
 
   LineChartData mainData() {
+    print(spots);
+    print(maxY);
     return LineChartData(
       gridData: FlGridData(
         show: true,
@@ -387,9 +444,9 @@ class _ChartDetailsState extends State<ChartDetails> {
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            interval: 1,
+            interval: 100,
             getTitlesWidget: leftTitleWidgets,
-            reservedSize: 42,
+            reservedSize: 30,
           ),
         ),
       ),
@@ -397,21 +454,13 @@ class _ChartDetailsState extends State<ChartDetails> {
         show: true,
         border: Border.all(color: const Color(0xff37434d)),
       ),
-      minX: 0,
-      maxX: 11,
+      minX: 1,
+      maxX: 12,
       minY: 0,
-      maxY: 6,
+      maxY: maxY,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 3),
-            FlSpot(2.6, 2),
-            FlSpot(4.9, 5),
-            FlSpot(6.8, 3.1),
-            FlSpot(8, 4),
-            FlSpot(9.5, 3),
-            FlSpot(11, 4),
-          ],
+          spots: spots,
           isCurved: true,
           gradient: LinearGradient(
             colors: gradientColors,
@@ -432,6 +481,21 @@ class _ChartDetailsState extends State<ChartDetails> {
         ),
       ],
     );
+  }
+
+  Future<void> _getChartData({Function(dynamic)? callback}) async {
+    try {
+      final res = await supabase
+          .from('scans_data_with_month_year')
+          .select('*')
+          .eq('redirect_id', widget.id);
+      callback?.call(res);
+    } catch (e) {
+      if (kDebugMode) print(e);
+      if (mounted) {
+        initSnackBar(context, "Something went wrong", SnackAlertType.warning);
+      }
+    }
   }
 }
 

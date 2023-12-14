@@ -82,6 +82,19 @@ String appendHttpIfNotPresent(String url) {
   return url;
 }
 
+String compactNumber(dynamic value) {
+  final decimalRegex = RegExp(r'^[-+]?(?:\d*\.\d+|\d+\.?)$');
+
+  if (value.runtimeType == String && !decimalRegex.hasMatch(value) || value == null) {
+    value = 0;
+  }
+
+  if (value.runtimeType == String) {
+    value = double.parse(value);
+  }
+  return NumberFormat.compact().format(value);
+}
+
 //
 //
 enum DateFormatEnum { short, long }
