@@ -54,7 +54,7 @@ class AppServices with ChangeNotifier {
       notifyListeners();
       callback?.call(value);
     } catch (e) {
-      if (kDebugMode) print(e);
+      if (kDebugMode) print("getQRCodes: $e");
       error?.call(e);
     } finally {
       isLoading = false;
@@ -89,7 +89,7 @@ class AppServices with ChangeNotifier {
     } catch (e) {
       qrcode.setChart([]);
       qrcode.setMaxY(0);
-      if (kDebugMode) print(e);
+      if (kDebugMode) print("getChartData: $e");
     }
   }
 
@@ -171,7 +171,7 @@ class AppServices with ChangeNotifier {
       userSummary.setChart(tempSpot);
       userSummary.setMaxY(max);
     } catch (e) {
-      if (kDebugMode) print(e);
+      if (kDebugMode) print("getUserSummaryChart: $e");
     }
   }
 
@@ -203,7 +203,7 @@ class AppServices with ChangeNotifier {
 
       callback?.call(value);
     } catch (e) {
-      if (kDebugMode) print(e);
+      if (kDebugMode) print("getUserSummary: $e");
       error?.call(e);
     }
   }
