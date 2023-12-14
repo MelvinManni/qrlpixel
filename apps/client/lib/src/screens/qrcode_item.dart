@@ -232,8 +232,9 @@ class ChartDetails extends StatelessWidget {
         label: "Scan Chart",
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          child: SizedBox(
-            height: 300,
+          child: Container(
+            padding: const EdgeInsets.only(top: 40),
+            height: 350,
             width: 500,
             child: AspectRatio(
               aspectRatio: 1,
