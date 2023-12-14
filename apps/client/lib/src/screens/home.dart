@@ -1,4 +1,5 @@
 import 'package:client/main.dart';
+import 'package:client/src/services/app_services.dart';
 import 'package:client/src/theme/custom_palette.dart';
 import 'package:client/src/widgets/auto_scroll.dart';
 import 'package:client/src/widgets/input_field.dart';
@@ -8,6 +9,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -207,74 +209,68 @@ class ChartLegendRow extends StatelessWidget {
   }
 }
 
-class QRCodesList extends StatefulWidget {
+class QRCodesList extends StatelessWidget {
   const QRCodesList({super.key});
 
   @override
-  State<QRCodesList> createState() => _QRCodesListState();
-}
-
-class _QRCodesListState extends State<QRCodesList> {
-  List<dynamic> qrcodes = [];
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      getQRCodes(callback: (value) {
-        setState(() {
-          qrcodes = value;
-        });
-      });
+  Widget build(BuildContext context) {
+    final appServices = Provider.of<AppServices>(context, listen: false);
+    Future.delayed(Duration.zero, () {
+      appServices.getQRCodes(
+          silent: true,
+          error: (_) {
+            if (context.mounted) {
+              initSnackBar(
+                  context, "Something went wrong", SnackAlertType.warning);
+            }
+          });
+    });
+    return Consumer<AppServices>(builder: (_, appServices, __) {
+      return Column(
+        children: [
+          StyledTextField(
+            hintText: "Search for QR codes",
+            prefixIcon: Icon(
+              Icons.search,
+              color: CustomPalette.primary[50],
+            ),
+          ),
+          const SizedBox(height: 20),
+          ...appServices.qrcodes
+              .map(
+                (value) => Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: QRCodeListItem(
+                    name: value["name"],
+                    url: value["url"],
+                    scans: value["total_scans"],
+                    qrcodeUrl: value["logo_url"],
+                    id: value["redirect_id"],
+                  ),
+                ),
+              )
+              .toList()
+        ],
+      );
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        StyledTextField(
-          hintText: "Search for QR codes",
-          prefixIcon: Icon(
-            Icons.search,
-            color: CustomPalette.primary[50],
-          ),
-        ),
-        const SizedBox(height: 20),
-        ...qrcodes
-            .map(
-              (value) => Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: QRCodeListItem(
-                  name: value["name"],
-                  url: value["url"],
-                  scans: value["total_scans"],
-                  qrcodeUrl: value["logo_url"],
-                  id: value["redirect_id"],
-                ),
-              ),
-            )
-            .toList()
-      ],
-    );
-  }
-
-  Future<void> getQRCodes({Function(dynamic)? callback}) async {
-    try {
-      final user = supabase.auth.currentUser;
-      final value = await supabase
-          .from("qrcode_details")
-          .select("*")
-          .eq("user", user?.id);
-      print(value);
-      callback?.call(value);
-    } catch (e) {
-      if (kDebugMode) print(e);
-      if (mounted) {
-        initSnackBar(context, "Something went wrong", SnackAlertType.warning);
-      }
-    }
-  }
+  // Future<void> getQRCodes({Function(dynamic)? callback}) async {
+  //   try {
+  //     final user = supabase.auth.currentUser;
+  //     final value = await supabase
+  //         .from("qrcode_details")
+  //         .select("*")
+  //         .eq("user", user?.id);
+  //     print(value);
+  //     callback?.call(value);
+  //   } catch (e) {
+  //     if (kDebugMode) print(e);
+  //     if (mounted) {
+  //       initSnackBar(context, "Something went wrong", SnackAlertType.warning);
+  //     }
+  //   }
+  // }
 }
 
 class QRCodeListItem extends StatelessWidget {
