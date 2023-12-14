@@ -1,4 +1,5 @@
 import 'package:client/main.dart';
+import 'package:client/src/models/pagination.dart';
 import 'package:client/src/models/qrcode_item.dart';
 import 'package:client/src/models/user_summary.dart';
 import 'package:client/src/theme/custom_palette.dart';
@@ -15,15 +16,19 @@ class AppServices with ChangeNotifier {
   bool userSummaryLoading = false;
   bool isLoading = false;
 
+  Pagination pagination = Pagination();
+
   Future<void> getQRCodes(
       {Function(dynamic)? callback,
       Function(dynamic)? error,
       String? search,
+      int page = 1,
       bool silent = false}) async {
     if (!silent) {
       isLoading = true;
       notifyListeners();
     }
+    pagination.currentPage = page;
     try {
       final user = supabase.auth.currentUser;
       final query =
@@ -33,7 +38,9 @@ class AppServices with ChangeNotifier {
         query.or('name.ilike.$search, description.ilike.$search');
       }
 
-      final value = await query.order('created_at', ascending: false).limit(10);
+      final value = await query.order('created_at', ascending: false).range(
+          (pagination.currentPage - 1) * pagination.limit,
+          pagination.currentPage * pagination.limit - 1);
 
       qrcodes = value;
       notifyListeners();
@@ -190,5 +197,13 @@ class AppServices with ChangeNotifier {
       if (kDebugMode) print(e);
       error?.call(e);
     }
+  }
+
+  loadApp() {
+    Future.wait([
+      getUserSummaryChart(),
+      getUserSummary(),
+      getQRCodes(),
+    ]);
   }
 }

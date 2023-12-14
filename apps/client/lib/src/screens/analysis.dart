@@ -10,33 +10,23 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class AnalysisScreen extends StatefulWidget {
+class AnalysisScreen extends StatelessWidget {
   const AnalysisScreen({super.key});
 
   @override
-  State<AnalysisScreen> createState() => _AnalysisScreenState();
-}
-
-GlobalKey<ScaffoldState> analysisScafoldKey = GlobalKey<ScaffoldState>();
-
-class _AnalysisScreenState extends State<AnalysisScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final appServices = Provider.of<AppServices>(context, listen: false);
-      appServices.getUserSummary(error: (_) {
-        if (mounted) {
-          initSnackBar(context, "Something went wrong!", SnackAlertType.error);
-        }
-      });
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration.zero, () {
+      final appServices = Provider.of<AppServices>(context, listen: false);
+      appServices.getUserSummary(
+          silent: true,
+          error: (_) {
+            if (context.mounted) {
+              initSnackBar(
+                  context, "Something went wrong!", SnackAlertType.error);
+            }
+          });
+    });
     return Scaffold(
-      key: analysisScafoldKey,
       appBar: AppBar(
         title: const Text("Analysis"),
       ),
