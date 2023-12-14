@@ -53,7 +53,7 @@ class QRCodeItemScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Image.network(
-                          qrcode?["image_url"] ?? "",
+                          qrcode?["qrl"] ?? "",
                           errorBuilder: (_, __, ___) => Image.asset(
                             'assets/logo.png',
                             width: 300,

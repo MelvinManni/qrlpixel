@@ -1,6 +1,7 @@
 import 'package:client/main.dart';
 import 'package:client/src/services/app_services.dart';
 import 'package:client/src/theme/custom_palette.dart';
+import 'package:client/src/utils.dart';
 import 'package:client/src/widgets/auto_scroll.dart';
 import 'package:client/src/widgets/input_field.dart';
 import 'package:client/src/widgets/screen_padding.dart';
@@ -74,7 +75,8 @@ class HomeScreen extends StatelessWidget {
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
                                       children: [
                                         Column(
                                           mainAxisAlignment:
@@ -98,7 +100,8 @@ class HomeScreen extends StatelessWidget {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 ChartLegendRow(
-                                                  color: CustomPalette.secondary,
+                                                  color:
+                                                      CustomPalette.secondary,
                                                   label: "$scans Scans",
                                                 ),
                                                 ChartLegendRow(
@@ -119,16 +122,19 @@ class HomeScreen extends StatelessWidget {
                                               PieChartData(
                                                 sections: [
                                                   PieChartSectionData(
-                                                    color: CustomPalette.success,
+                                                    color:
+                                                        CustomPalette.success,
                                                     value: uniqueScans,
                                                     title: "$uniquePercentage%",
                                                     // radius: 50,
-                                                    titleStyle: Theme.of(context)
-                                                        .textTheme
-                                                        .bodySmall
-                                                        ?.copyWith(
-                                                            fontWeight:
-                                                                FontWeight.bold),
+                                                    titleStyle:
+                                                        Theme.of(context)
+                                                            .textTheme
+                                                            .bodySmall
+                                                            ?.copyWith(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
                                                   ),
                                                   PieChartSectionData(
                                                     color:
@@ -136,12 +142,14 @@ class HomeScreen extends StatelessWidget {
                                                     value: scans.toDouble(),
                                                     title: "$totalPercentage%",
                                                     // radius: 50,
-                                                    titleStyle: Theme.of(context)
-                                                        .textTheme
-                                                        .bodySmall
-                                                        ?.copyWith(
-                                                            fontWeight:
-                                                                FontWeight.bold),
+                                                    titleStyle:
+                                                        Theme.of(context)
+                                                            .textTheme
+                                                            .bodySmall
+                                                            ?.copyWith(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold),
                                                   ),
                                                 ],
                                                 centerSpaceRadius: 20,
@@ -312,7 +320,7 @@ class QRCodesList extends StatelessWidget {
                     name: value["name"],
                     url: value["url"],
                     scans: value["total_scans"],
-                    qrcodeUrl: value["logo_url"],
+                    imageUrl: value["image_url"],
                     id: value["redirect_id"],
                   ),
                 ),
@@ -350,13 +358,13 @@ class QRCodeListItem extends StatelessWidget {
       this.name,
       this.url,
       this.scans,
-      this.qrcodeUrl,
+      this.imageUrl,
       required this.id});
 
   final String? name;
   final String? url;
   final int? scans;
-  final String? qrcodeUrl;
+  final String? imageUrl;
   final String id;
 
   @override
@@ -387,7 +395,7 @@ class QRCodeListItem extends StatelessWidget {
               child: Row(
                 children: [
                   CodeNetworkImage(
-                    imageUrl: qrcodeUrl,
+                    imageUrl: imageUrl,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -445,8 +453,9 @@ class CodeNetworkImage extends StatelessWidget {
       child: FittedBox(
         fit: BoxFit.fill,
         child: Image.network(
-          imageUrl ??
-              "https://sjuqrwtxfuztuyzbviwr.supabase.co/storage/v1/object/public/qrcode/qrl_pixel_logo.png",
+          !checkIfValueIsEmptyStringOrNull(imageUrl)
+              ? imageUrl!
+              : "https://sjuqrwtxfuztuyzbviwr.supabase.co/storage/v1/object/public/qrcode/qrl_pixel_logo.png",
           loadingBuilder: (_, widget, progress) => Skeletonizer(
             enabled: progress != null,
             child: widget,
