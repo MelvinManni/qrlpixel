@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AppServices with ChangeNotifier {
+  TextEditingController searchController = TextEditingController();
   UserSummary userSummary = UserSummary();
   QRCodeItemModel qrcode = QRCodeItemModel();
   List<dynamic> qrcodes = [];
@@ -17,6 +18,7 @@ class AppServices with ChangeNotifier {
   Future<void> getQRCodes(
       {Function(dynamic)? callback,
       Function(dynamic)? error,
+      String? search,
       bool silent = false}) async {
     if (!silent) {
       isLoading = true;
@@ -24,17 +26,23 @@ class AppServices with ChangeNotifier {
     }
     try {
       final user = supabase.auth.currentUser;
-      final value = await supabase
-          .from("qrcode_details")
-          .select("*")
-          .eq("user", user?.id);
+      final query =
+          supabase.from("qrcode_details").select("*").eq("user", user?.id);
+
+      if (search != null && search.isNotEmpty) {
+        query.or('name.ilike.$search, description.ilike.$search');
+      }
+
+      final value = await query.order('created_at', ascending: false).limit(10);
 
       qrcodes = value;
+      notifyListeners();
       callback?.call(value);
     } catch (e) {
       if (kDebugMode) print(e);
       error?.call(e);
     } finally {
+      isLoading = false;
       notifyListeners();
     }
   }

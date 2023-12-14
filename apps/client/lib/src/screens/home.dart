@@ -17,6 +17,19 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String? name = supabase.auth.currentUser?.userMetadata?["full_name"];
+    final appServices = Provider.of<AppServices>(context, listen: false);
+
+    Future.delayed(Duration.zero, () {
+      appServices.getUserSummary(
+          silent: true,
+          error: (_) {
+            if (context.mounted) {
+              initSnackBar(
+                  context, "Something went wrong!", SnackAlertType.error);
+            }
+          });
+    });
+
     return Scaffold(
       appBar: LogoutAppBar(
         label: "Hello${name != null ? ", ${name.split(" ")[0]}" : ""}!",
@@ -35,96 +48,119 @@ class HomeScreen extends StatelessWidget {
                       color: CustomPalette.primary[200],
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                    child: Consumer<AppServices>(builder: (_, appServices, __) {
+                      final summary = appServices.userSummary.summary;
+                      final double totalScans =
+                          ((summary?["total_scans"] ?? 0) as int).toDouble();
+                      final double uniqueScans =
+                          ((summary?["unique_scans"] ?? 0) as int).toDouble();
+                      final scans = _calculateScans(totalScans, uniqueScans);
+                      final double uniquePercentage = uniqueScans == 0
+                          ? 0
+                          : double.parse(
+                                  ((uniqueScans / totalScans) * 100).toString())
+                              .ceilToDouble();
+                      final double totalPercentage =
+                          (100 - uniquePercentage).ceilToDouble();
+                      return Skeletonizer(
+                        enabled: appServices.userSummaryLoading,
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Column(
+                              Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Text(
-                                    "75 Scans",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium
-                                        ?.copyWith(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                          color: CustomPalette.white,
-                                        ),
-                                  ),
-                                  const Column(
+                                  Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      ChartLegendRow(
-                                        color: CustomPalette.secondary,
-                                        label: "75 total scans",
+                                      Text(
+                                        "${totalScans.toInt()} Scans",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.copyWith(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.bold,
+                                              color: CustomPalette.white,
+                                            ),
                                       ),
-                                      ChartLegendRow(
-                                        color: CustomPalette.success,
-                                        label: "25 unique scans",
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          ChartLegendRow(
+                                            color: CustomPalette.secondary,
+                                            label: "$scans Scans",
+                                          ),
+                                          ChartLegendRow(
+                                            color: CustomPalette.success,
+                                            label:
+                                                "${uniqueScans.toInt()} Unique Scans",
+                                          )
+                                        ],
                                       )
                                     ],
+                                  ),
+                                  SizedBox(
+                                    width: 120,
+                                    height: 120,
+                                    child: AspectRatio(
+                                      aspectRatio: 1,
+                                      child: PieChart(
+                                        PieChartData(
+                                          sections: [
+                                            PieChartSectionData(
+                                              color: CustomPalette.success,
+                                              value: uniqueScans,
+                                              title: "$uniquePercentage%",
+                                              // radius: 50,
+                                              titleStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                            ),
+                                            PieChartSectionData(
+                                              color: CustomPalette.secondary,
+                                              value: scans.toDouble(),
+                                              title: "$totalPercentage%",
+                                              // radius: 50,
+                                              titleStyle: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                            ),
+                                          ],
+                                          centerSpaceRadius: 20,
+                                          sectionsSpace: 0,
+                                        ),
+                                        swapAnimationDuration: const Duration(
+                                            milliseconds: 150), // Optional
+                                        swapAnimationCurve: Curves.linear,
+                                      ),
+                                    ),
                                   )
                                 ],
                               ),
-                              SizedBox(
-                                width: 120,
-                                height: 120,
-                                child: AspectRatio(
-                                  aspectRatio: 1,
-                                  child: PieChart(
-                                    PieChartData(
-                                      sections: [
-                                        PieChartSectionData(
-                                          color: CustomPalette.success,
-                                          value: 25,
-                                          title: "33.3%",
-                                          // radius: 50,
-                                          titleStyle: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall
-                                              ?.copyWith(
-                                                  fontWeight: FontWeight.bold),
-                                        ),
-                                        PieChartSectionData(
-                                          color: CustomPalette.secondary,
-                                          value: 75 - 25,
-                                          title: "66.7%",
-                                          // radius: 50,
-                                          titleStyle: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall
-                                              ?.copyWith(
-                                                  fontWeight: FontWeight.bold),
-                                        ),
-                                      ],
-                                      centerSpaceRadius: 20,
-                                      sectionsSpace: 0,
-                                    ),
-                                    swapAnimationDuration: const Duration(
-                                        milliseconds: 150), // Optional
-                                    swapAnimationCurve: Curves.linear,
-                                  ),
+                              Container(
+                                margin: const EdgeInsets.only(top: 20),
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: CustomPalette.primary,
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                               )
-                            ],
-                          ),
-                          Container(
-                            margin: const EdgeInsets.only(top: 20),
-                            padding: const EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: CustomPalette.primary,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          )
-                        ]),
+                            ]),
+                      );
+                    }),
                   ),
                   const SizedBox(height: 80),
                   const QRCodesList()
@@ -135,6 +171,13 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  int _calculateScans(double? total, double? unique) {
+    total ??= 0;
+    unique ??= 0;
+
+    return (total - unique).toInt();
   }
 }
 
@@ -228,23 +271,45 @@ class QRCodesList extends StatelessWidget {
       return Column(
         children: [
           StyledTextField(
-            hintText: "Search for QR codes",
-            prefixIcon: Icon(
-              Icons.search,
-              color: CustomPalette.primary[50],
-            ),
-          ),
+              hintText: "Search for QR codes",
+              controller: appServices.searchController,
+              onEditingComplete: () {
+                appServices.getQRCodes(
+                  search: appServices.searchController.text,
+                );
+
+                FocusScope.of(context).unfocus();
+              },
+              prefixIcon: Icon(
+                Icons.search,
+                color: CustomPalette.primary[50],
+              ),
+              suffixIcon: appServices.searchController.text.isEmpty
+                  ? null
+                  : IconButton(
+                      onPressed: () {
+                        appServices.searchController.clear();
+                        appServices.getQRCodes(silent: true);
+                      },
+                      icon: Icon(
+                        Icons.clear,
+                        color: CustomPalette.primary[50],
+                      ),
+                    )),
           const SizedBox(height: 20),
           ...appServices.qrcodes
               .map(
                 (value) => Padding(
                   padding: const EdgeInsets.only(bottom: 20),
-                  child: QRCodeListItem(
-                    name: value["name"],
-                    url: value["url"],
-                    scans: value["total_scans"],
-                    qrcodeUrl: value["logo_url"],
-                    id: value["redirect_id"],
+                  child: Skeletonizer(
+                    enabled: appServices.isLoading,
+                    child: QRCodeListItem(
+                      name: value["name"],
+                      url: value["url"],
+                      scans: value["total_scans"],
+                      qrcodeUrl: value["logo_url"],
+                      id: value["redirect_id"],
+                    ),
                   ),
                 ),
               )
