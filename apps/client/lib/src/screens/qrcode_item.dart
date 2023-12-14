@@ -1,17 +1,42 @@
+import 'package:client/main.dart';
 import 'package:client/src/theme/custom_palette.dart';
+import 'package:client/src/utils.dart';
 import 'package:client/src/widgets/auto_scroll.dart';
 import 'package:client/src/widgets/input_field.dart';
 import 'package:client/src/widgets/mock_qr_code.dart';
 import 'package:client/src/widgets/screen_padding.dart';
+import 'package:client/src/widgets/snack_alert.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class QRCodeItemScreen extends StatelessWidget {
+class QRCodeItemScreen extends StatefulWidget {
   const QRCodeItemScreen({super.key, this.id});
 
   final String? id;
+
+  @override
+  State<QRCodeItemScreen> createState() => _QRCodeItemScreenState();
+}
+
+class _QRCodeItemScreenState extends State<QRCodeItemScreen> {
+  dynamic qrcode;
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getQRCode(callback: (value) {
+        setState(() {
+          qrcode = value;
+        });
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,92 +47,150 @@ class QRCodeItemScreen extends StatelessWidget {
             context.canPop() ? context.pop() : context.go('/app');
           },
         ),
-        title: Text(id ?? ""),
+        title: Text(qrcode?["name"] ?? widget.id ?? ""),
       ),
       body: SafeArea(
         child: AutoScrollChild(
-          child: Material(
-            color: CustomPalette.white[950],
-            child: ScreenPadding(
-              top: 20,
-              child: Column(
-                children: [
-                  const MockQRCodeWidget(),
-                  const SizedBox(height: 30),
-                  const ChartDetails(),
-                  const SizedBox(height: 30),
-                  Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        color: CustomPalette.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: CustomPalette.primary[50]!.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
-                          )
-                        ]),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 20,
-                      horizontal: 10,
+          child: Skeletonizer(
+            enabled: isLoading,
+            child: Material(
+              color: CustomPalette.white[950],
+              child: ScreenPadding(
+                top: 20,
+                child: Column(
+                  children: [
+                    Image.network(
+                      qrcode?["image_url"] ?? "",
+                      errorBuilder: (_, __, ___) =>  Image.asset('assets/logo.png', width: 300,),
                     ),
-                    child: const Column(
-                      children: [
-                        StatsCol(label: "Name", value: "Figma Company Design"),
-                        StatsCol(
-                            label: "Description",
-                            value:
-                                "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"),
-                        StatsCol(
-                            label: "URL",
-                            value:
-                                "https://www.figma.com/file/jU3J2z9ZTv0CXJpPoOp0p6/QRLPixel?type=design&node-id=3-1336&mode=design&t=IvtOuzv9ISGRGSKY-0",
-                            isUrl: true),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                                child: StatsCol(
-                                    label: "Clicks",
-                                    value: "45",
-                                    isBadge: true)),
-                            Expanded(
-                                child: StatsCol(
-                                    label: "Unique Clicks",
-                                    value: "5",
-                                    isBadge: true)),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                                child: StatsCol(
-                                    label: "Mobile",
-                                    value: "15",
-                                    isBadge: true)),
-                            Expanded(
-                                child: StatsCol(
-                                    label: "Desktop",
-                                    value: "30",
-                                    isBadge: true)),
-                          ],
-                        ),
-                        StatsCol(
-                            label: "Top Country",
-                            value: "United State",
-                            isBadge: true)
-                      ],
-                    ),
-                  )
-                ],
+                    const SizedBox(height: 30),
+                    const ChartDetails(),
+                    const SizedBox(height: 30),
+                    Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          color: CustomPalette.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color:
+                                  CustomPalette.primary[50]!.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            )
+                          ]),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 20,
+                        horizontal: 10,
+                      ),
+                      child: Column(
+                        children: [
+                          qrcode?["name"] == null
+                              ? const SizedBox.shrink()
+                              : StatsCol(label: "Name", value: qrcode?["name"]),
+                          checkIfValueIsEmptyStringOrNull(
+                                  qrcode?["description"])
+                              ? const SizedBox.shrink()
+                              : StatsCol(
+                                  label: "Description",
+                                  value: qrcode?["description"]),
+                          qrcode?["url"] == null
+                              ? const SizedBox.shrink()
+                              : StatsCol(
+                                  label: "URL",
+                                  value: qrcode?["url"],
+                                  isUrl: true),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                  child: StatsCol(
+                                      label: "Scans",
+                                      value:
+                                          qrcode?["total_scans"]?.toString() ??
+                                              "0",
+                                      isBadge: true)),
+                              Expanded(
+                                  child: StatsCol(
+                                      label: "Unique Scans",
+                                      value:
+                                          qrcode?["unique_scans"]?.toString() ??
+                                              "0",
+                                      isBadge: true)),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                  child: StatsCol(
+                                      label: "Mobile",
+                                      value:
+                                          qrcode?["mobile_count"]?.toString() ??
+                                              "0",
+                                      isBadge: true)),
+                              Expanded(
+                                  child: StatsCol(
+                                      label: "Desktop",
+                                      value: qrcode?["desktop_count"]
+                                              ?.toString() ??
+                                          "0",
+                                      isBadge: true)),
+                            ],
+                          ),
+                          StatsCol(
+                              label: "Top Location",
+                              value: qrcode?["top_location"] ?? "",
+                              isBadge: true)
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> getQRCode({Function(dynamic)? callback}) async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      final user = supabase.auth.currentUser;
+      final value = await supabase
+          .from("qrcode_details")
+          .select("*")
+          .eq("user", user?.id)
+          .eq("redirect_id", widget.id)
+          .maybeSingle();
+
+      if (value == null) {
+        if (mounted) {
+          initSnackBar(context, "No QR Code found", SnackAlertType.warning);
+          Future.delayed(const Duration(seconds: 2), () {
+            context.canPop() ? context.pop() : context.go('/app');
+          });
+        }
+        return;
+      } else {
+        Future.delayed(const Duration(seconds: 1), () {
+          setState(() {
+            isLoading = false;
+          });
+        });
+      }
+
+      callback?.call(value);
+    } catch (e) {
+      if (kDebugMode) print(e);
+      if (mounted) {
+        initSnackBar(context, "Something went wrong", SnackAlertType.warning);
+      }
+    }
   }
 }
 
@@ -394,7 +477,7 @@ class _AccordionState extends State<Accordion> {
                 setState(() {
                   isExpanded = !isExpanded;
                 });
-        
+
                 if (isExpanded) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     setState(() {

@@ -5,12 +5,13 @@ import 'package:client/src/widgets/input_field.dart';
 import 'package:client/src/widgets/screen_padding.dart';
 import 'package:client/src/widgets/snack_alert.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class HomeScreen extends StatelessWidget {
-   const HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -214,7 +215,20 @@ class QRCodesList extends StatefulWidget {
 }
 
 class _QRCodesListState extends State<QRCodesList> {
-  List<Map<String, dynamic>> qrcodes = [];
+  List<dynamic> qrcodes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getQRCodes(callback: (value) {
+        setState(() {
+          qrcodes = value;
+        });
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -229,9 +243,15 @@ class _QRCodesListState extends State<QRCodesList> {
         const SizedBox(height: 20),
         ...qrcodes
             .map(
-              (value) => const Padding(
-                padding: EdgeInsets.only(bottom: 20),
-                child: QRCodeListItem(),
+              (value) => Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: QRCodeListItem(
+                  name: value["name"],
+                  url: value["url"],
+                  scans: value["total_scans"],
+                  qrcodeUrl: value["logo_url"],
+                  id: value["redirect_id"],
+                ),
               ),
             )
             .toList()
@@ -239,16 +259,17 @@ class _QRCodesListState extends State<QRCodesList> {
     );
   }
 
-  Future<void> getQRCodes() async {
+  Future<void> getQRCodes({Function(dynamic)? callback}) async {
     try {
       final user = supabase.auth.currentUser;
-      final value =
-          await supabase.from("qrcodes").select("*").eq("user", user?.id);
-      print(value.data);
-      setState(() {
-        qrcodes = value.data as List<Map<String, dynamic>>;
-      });
+      final value = await supabase
+          .from("qrcode_details")
+          .select("*")
+          .eq("user", user?.id);
+      print(value);
+      callback?.call(value);
     } catch (e) {
+      if (kDebugMode) print(e);
       if (mounted) {
         initSnackBar(context, "Something went wrong", SnackAlertType.warning);
       }
@@ -257,67 +278,92 @@ class _QRCodesListState extends State<QRCodesList> {
 }
 
 class QRCodeListItem extends StatelessWidget {
-  const QRCodeListItem({super.key});
+  const QRCodeListItem(
+      {super.key,
+      this.name,
+      this.url,
+      this.scans,
+      this.qrcodeUrl,
+      required this.id});
+
+  final String? name;
+  final String? url;
+  final int? scans;
+  final String? qrcodeUrl;
+  final String id;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-      decoration: BoxDecoration(
-        color: CustomPalette.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: CustomPalette.primary.withOpacity(0.1),
-            spreadRadius: 0,
-            blurRadius: 10,
-            offset: const Offset(0, 4), // changes position of shadow
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Row(
-              children: [
-                const CodeNetworkImage(),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "QR Code Name",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: CustomPalette.primary,
-                            ),
-                      ),
-                      Text(
-                        "https://www.figma.com/file/jU3J2z9ZTv0CXJpPoOp0p6/QRLPixel?type=design&node-id=3-1336&mode=design&t=IvtOuzv9ISGRGSKY-0",
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: CustomPalette.primary,
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+    return InkWell(
+      onTap: () {
+        context.pushNamed("qrcode-item", pathParameters: {
+          "id": id,
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+        decoration: BoxDecoration(
+          color: CustomPalette.white,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: CustomPalette.primary.withOpacity(0.1),
+              spreadRadius: 0,
+              blurRadius: 10,
+              offset: const Offset(0, 4), // changes position of shadow
             ),
-          ),
-          const SizedBox(
-            width: 75,
-          ),
-          const ScanBadge(value: 56),
-        ],
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  CodeNetworkImage(
+                    imageUrl: qrcodeUrl,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          name ?? "",
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: CustomPalette.primary,
+                                  ),
+                        ),
+                        Text(
+                          url ?? "",
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: CustomPalette.primary,
+                                  ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(
+              width: 75,
+            ),
+            ScanBadge(value: scans ?? 0),
+          ],
+        ),
       ),
     );
   }
 }
 
 class CodeNetworkImage extends StatelessWidget {
-  const CodeNetworkImage({super.key});
+  const CodeNetworkImage({super.key, this.imageUrl});
+
+  final String? imageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -332,7 +378,8 @@ class CodeNetworkImage extends StatelessWidget {
       child: FittedBox(
         fit: BoxFit.fill,
         child: Image.network(
-          "https://cdn.sanity.io/images/599r6htc/localized/46a76c802176eb17b04e12108de7e7e0f3736dc6-1024x1024.png",
+          imageUrl ??
+              "https://sjuqrwtxfuztuyzbviwr.supabase.co/storage/v1/object/public/qrcode/qrl_pixel_logo.png",
           loadingBuilder: (_, widget, progress) => Skeletonizer(
             enabled: progress != null,
             child: widget,
