@@ -37,7 +37,6 @@ class QRCodeItemScreen extends StatelessWidget {
         ),
         title: Consumer<AppServices>(builder: (_, appServices, __) {
           final qrcode = appServices.qrcode.details;
-          print(qrcode.toString());
           return Text(qrcode?["name"] ?? id ?? "");
         }),
       ),
@@ -404,21 +403,6 @@ class ChartDetails extends StatelessWidget {
       ],
     );
   }
-
-  // Future<void> _getChartData({Function(dynamic)? callback}) async {
-  //   try {
-  //     final res = await supabase
-  //         .from('scans_data_with_month_year')
-  //         .select('*')
-  //         .eq('redirect_id', widget.id);
-  //     callback?.call(res);
-  //   } catch (e) {
-  //     if (kDebugMode) print(e);
-  //     if (mounted) {
-  //       initSnackBar(context, "Something went wrong", SnackAlertType.warning);
-  //     }
-  //   }
-  // }
 }
 
 class Accordion extends StatefulWidget {

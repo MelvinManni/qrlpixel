@@ -1,14 +1,17 @@
 import 'package:client/main.dart';
 import 'package:client/src/models/qrcode_item.dart';
+import 'package:client/src/models/user_summary.dart';
+import 'package:client/src/theme/custom_palette.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class AppServices with ChangeNotifier {
+  UserSummary userSummary = UserSummary();
   QRCodeItemModel qrcode = QRCodeItemModel();
   List<dynamic> qrcodes = [];
   bool qrCodeLoading = false;
-  bool analysisLoading = false;
+  bool userSummaryLoading = false;
   bool isLoading = false;
 
   Future<void> getQRCodes(
@@ -92,6 +95,85 @@ class AppServices with ChangeNotifier {
       } else {
         qrcode.setDetails(value);
         qrCodeLoading = false;
+        notifyListeners();
+      }
+
+      callback?.call(value);
+    } catch (e) {
+      if (kDebugMode) print(e);
+      error?.call(e);
+    }
+  }
+
+  Future<void> getUserSummaryChart() async {
+    final user = supabase.auth.currentUser;
+
+    try {
+      final value = await supabase
+          .from('user_scans_summary_by_month_year_view')
+          .select("*")
+          .eq('user_id', user?.id);
+      value as List<dynamic>;
+      double max = 0;
+      List<BarChartGroupData> tempSpot = [];
+
+      for (var i = 0; i < value.length; i++) {
+        final item = value[i];
+        final y = (item["scans_count"] as int).toDouble();
+        final x = (item["month"] as int);
+        final spot = BarChartGroupData(
+          x: x,
+          barRods: [
+            BarChartRodData(
+              toY: y,
+              gradient: const LinearGradient(
+                colors: [
+                  CustomPalette.secondary,
+                  CustomPalette.primary,
+                ],
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+              ),
+            )
+          ],
+          showingTooltipIndicators: [0],
+        );
+        tempSpot.add(spot);
+        if (y > max) {
+          max = y;
+        }
+      }
+
+      userSummary.setChart(tempSpot);
+      userSummary.setMaxY(max);
+    } catch (e) {
+      if (kDebugMode) print(e);
+    }
+  }
+
+  Future<void> getUserSummary({
+    bool silent = false,
+    Function(dynamic)? callback,
+    Function(dynamic)? error,
+  }) async {
+    if (!silent) {
+      userSummaryLoading = true;
+      notifyListeners();
+    }
+    try {
+      final user = supabase.auth.currentUser;
+      final value = await supabase
+          .from('user_summary')
+          .select("*")
+          .eq('user_id', user?.id)
+          .maybeSingle();
+
+      if (value == null) {
+        error?.call(null);
+        return;
+      } else {
+        userSummary.setSummary(value);
+        userSummaryLoading = false;
         notifyListeners();
       }
 

@@ -23,17 +23,26 @@ String getCurrentRouteUri(BuildContext context) {
       .toString();
 }
 
-String formatDate(dynamic date, [DateFormatEnum? format]) {
+String formatDate(dynamic date,
+    {DateFormatEnum? format, bool withTime = false}) {
   if (date.runtimeType == String) {
     date = DateTime.parse(date);
   } else if (date.runtimeType != DateTime) {
     return "";
   }
 
+  String returnValue;
   if (format == DateFormatEnum.long) {
-    return DateFormat.yMMMMd().format(date).toString();
+    returnValue = DateFormat.yMMMMd().format(date).toString();
+  } else {
+    returnValue = DateFormat.yMMMd().format(date).toString();
   }
-  return DateFormat.yMMMd().format(date).toString();
+
+  if (withTime) {
+    returnValue += " ${DateFormat.jm().format(date).toString()}";
+  }
+
+  return returnValue;
 }
 
 bool checkIfValueIsEmptyStringOrNull(String? a) {
@@ -85,7 +94,8 @@ String appendHttpIfNotPresent(String url) {
 String compactNumber(dynamic value) {
   final decimalRegex = RegExp(r'^[-+]?(?:\d*\.\d+|\d+\.?)$');
 
-  if (value.runtimeType == String && !decimalRegex.hasMatch(value) || value == null) {
+  if (value.runtimeType == String && !decimalRegex.hasMatch(value) ||
+      value == null) {
     value = 0;
   }
 
@@ -97,4 +107,4 @@ String compactNumber(dynamic value) {
 
 //
 //
-enum DateFormatEnum { short, long }
+enum DateFormatEnum { short, long, time }
