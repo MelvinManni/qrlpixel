@@ -6,9 +6,12 @@ import isURL from 'validator/lib/isURL';
 import { validateGenerateBody } from '../utils/validateBody';
 import { generateRedirectId } from '../utils/generateRedirectId';
 import generateQRCode from '../utils/generateQRCode';
+import validator from 'validator';
 
 const SUPABASE_BUCKET_PATH =
   'https://sjuqrwtxfuztuyzbviwr.supabase.co/storage/v1/object/public/qrcode/images/';
+const SUPABASE_BUCKET_PATH_LOGOS =
+  'https://sjuqrwtxfuztuyzbviwr.supabase.co/storage/v1/object/public/qrcode/logos/';
 
 export const createQRCode = async (req: ReqWithUser, res: Response) => {
   try {
@@ -72,13 +75,32 @@ export const createQRCode = async (req: ReqWithUser, res: Response) => {
       });
     }
 
+    let logo: string | undefined;
+
+    if (!validator.isEmpty(image64 ?? '')) {
+      // upload  the logo to stoorage
+      const { data: logoData, error: logoError } = await supabaseClient.storage
+        .from('qrcode/logos')
+        .upload(`${randomStr}.png`, Buffer.from(image64, 'base64'));
+
+      if (logoError) {
+        return res.status(HTTPCODES.INTERNAL_SERVER_ERROR).json({
+          message:
+            logoError.message ?? 'Something went wrong generating QR code',
+        });
+      }
+
+      logo = logoData.path;
+    }
+
     // save to db
     const { error: dbError } = await supabaseClient.from('qrcode').insert({
       user: req.user.id,
       url,
       name,
       description,
-      image_url: SUPABASE_BUCKET_PATH + storageData.path,
+      qrl: SUPABASE_BUCKET_PATH + storageData.path,
+      image_url: !logo ? '' : SUPABASE_BUCKET_PATH_LOGOS + logo,
       redirect_id: randomStr,
     });
 
