@@ -371,7 +371,7 @@ class QRCodeListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        context.pushNamed("qrcode-item", pathParameters: {
+        context.goNamed("qrcode-item", pathParameters: {
           "id": id,
         });
       },

@@ -1,4 +1,5 @@
 import 'package:client/src/services/app_services.dart';
+import 'package:client/src/services/http_services.dart';
 import 'package:client/src/theme/custom_palette.dart';
 import 'package:client/src/utils.dart';
 import 'package:client/src/widgets/auto_scroll.dart';
@@ -7,10 +8,13 @@ import 'package:client/src/widgets/input_field.dart';
 import 'package:client/src/widgets/screen_padding.dart';
 import 'package:client/src/widgets/snack_alert.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class QRCodeItemScreen extends StatelessWidget {
@@ -40,6 +44,34 @@ class QRCodeItemScreen extends StatelessWidget {
           return Text(qrcode?["name"] ?? id ?? "");
         }),
       ),
+      floatingActionButton:
+          Consumer<AppServices>(builder: (_, appServices, __) {
+        return  Skeletonizer(
+          enabled: appServices.qrCodeLoading,
+          child: FloatingActionButton(
+            onPressed: () async {
+              try {
+                final res =
+                    await HTTPServices.get(appServices.qrcode.details["qrl"]);
+                final barcode = XFile.fromData(res.bodyBytes,
+                    mimeType: "image/png",
+                    name: "${appServices.qrcode.details?["redirect_id"]}.png");
+                await Share.shareXFiles([barcode]);
+              } catch (e) {
+                if (kDebugMode) print(e);
+                if (context.mounted) {
+                  initSnackBar(
+                      context, "Something went wrong", SnackAlertType.warning);
+                }
+              }
+            },
+            child: const Icon(
+              Icons.send,
+              color: CustomPalette.white,
+            ),
+          ),
+        );
+      }),
       body: SafeArea(
         child: AutoScrollChild(
           child: Consumer<AppServices>(builder: (_, appServices, __) {
@@ -379,10 +411,18 @@ class ChartDetails extends StatelessWidget {
       minX: 1,
       maxX: 12,
       minY: 0,
-      maxY: maxY,
+      maxY: 5,
       lineBarsData: [
         LineChartBarData(
-          spots: spots,
+          spots: const [
+            FlSpot(1, 3),
+            FlSpot(3, 2),
+            FlSpot(4, 5),
+            FlSpot(6, 3.1),
+            FlSpot(8, 4),
+            FlSpot(9, 3),
+            FlSpot(11, 4),
+          ],
           isCurved: true,
           gradient: LinearGradient(
             colors: gradientColors,

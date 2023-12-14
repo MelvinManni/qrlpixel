@@ -128,6 +128,7 @@ class _AppRouteShellState extends State<AppRouteShell>
   }
 
   displayBottomNav(String path) {
+    print(path);
     return tabLocations.contains(path);
   }
 
