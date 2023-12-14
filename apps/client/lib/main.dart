@@ -1,8 +1,10 @@
 import 'package:client/src/router/root_routes.dart';
+import 'package:client/src/services/app_services.dart';
 import 'package:client/src/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
@@ -54,11 +56,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     listenToAuthChange();
-    return GestureDetector(
-      onTap: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: const MaterialRouterApp(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AppServices()),
+      ],
+      child: GestureDetector(
+        onTap: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+        },
+        child: const MaterialRouterApp(),
+      ),
     );
   }
 }
