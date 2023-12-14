@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class Pagination {
   int currentPage;
   int total;
+  bool loadingData = false;
   final int limit = 10;
 
   final ScrollController scrollController = ScrollController();

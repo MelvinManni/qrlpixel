@@ -21,20 +21,24 @@ class AppServices with ChangeNotifier {
   Future<void> getQRCodes(
       {Function(dynamic)? callback,
       Function(dynamic)? error,
-      String? search,
       int page = 1,
       bool silent = false}) async {
+    final search = searchController.text;
     if (!silent) {
       isLoading = true;
       notifyListeners();
     }
     pagination.currentPage = page;
+    if (page > 1) {
+      pagination.loadingData = true;
+      notifyListeners();
+    }
     try {
       final user = supabase.auth.currentUser;
       final query =
           supabase.from("qrcode_details").select("*").eq("user", user?.id);
 
-      if (search != null && search.isNotEmpty) {
+      if (search.isNotEmpty) {
         query.or('name.ilike.$search, description.ilike.$search');
       }
 
@@ -42,7 +46,11 @@ class AppServices with ChangeNotifier {
           (pagination.currentPage - 1) * pagination.limit,
           pagination.currentPage * pagination.limit - 1);
 
-      qrcodes = value;
+      if (page == 1) {
+        qrcodes = value as List<dynamic>;
+      } else {
+        qrcodes.addAll(value as List<dynamic>);
+      }
       notifyListeners();
       callback?.call(value);
     } catch (e) {
@@ -50,6 +58,7 @@ class AppServices with ChangeNotifier {
       error?.call(e);
     } finally {
       isLoading = false;
+      pagination.loadingData = false;
       notifyListeners();
     }
   }
