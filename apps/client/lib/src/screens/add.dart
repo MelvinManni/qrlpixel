@@ -246,7 +246,6 @@ class _AddNewQRCodeScreenState extends State<AddNewQRCodeScreen> {
             body: body, token: token);
 
         final response = JSONServices.decode(res.body);
-        print(response);
 
         if (res.statusCode != 201) {
           if (mounted) {
