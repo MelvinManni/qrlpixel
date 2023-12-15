@@ -2,6 +2,7 @@ import 'package:client/main.dart';
 import 'package:client/src/utils.dart';
 import 'package:client/src/widgets/auto_scroll.dart';
 import 'package:client/src/theme/custom_palette.dart';
+import 'package:client/src/widgets/custom_text_button.dart';
 import 'package:client/src/widgets/input_field.dart';
 import 'package:client/src/widgets/screen_padding.dart';
 import 'package:client/src/widgets/snack_alert.dart';
@@ -21,6 +22,8 @@ class _SignupScreenState extends State<SignupScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+  bool signingUp = false;
+  bool signingUpWIthGoogle = false;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +79,11 @@ class _SignupScreenState extends State<SignupScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  TextButton(onPressed: () {}, child: const Text("Continue")),
+                  CustomTextButton(
+                      loading: signingUp,
+                      disabled: signingUpWIthGoogle,
+                      onPressed: _handleSignup,
+                      child: const Text("Continue")),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
                     child: Row(
@@ -92,7 +99,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: signingUp || signingUp ? null : _oAuthSignup,
                     style: ElevatedButton.styleFrom(
                         backgroundColor: CustomPalette.white),
                     child: Row(
@@ -150,6 +157,9 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Future<void> _handleSignup() async {
+    setState(() {
+      signingUp = true;
+    });
     try {
       if (formKey.currentState!.validate()) {
         await supabase.auth.signUp(
@@ -168,10 +178,17 @@ class _SignupScreenState extends State<SignupScreen> {
         initSnackBar(context, "Something went wrong while logging in...",
             SnackAlertType.error);
       }
+    } finally {
+      setState(() {
+        signingUp = false;
+      });
     }
   }
 
   Future<void> _oAuthSignup() async {
+    setState(() {
+      signingUpWIthGoogle = true;
+    });
     try {
       await supabase.auth.signInWithOAuth(
         Provider.google,
@@ -190,6 +207,10 @@ class _SignupScreenState extends State<SignupScreen> {
         initSnackBar(context, "Something went wrong while logging in...",
             SnackAlertType.error);
       }
+    } finally {
+      setState(() {
+        signingUpWIthGoogle = false;
+      });
     }
   }
 

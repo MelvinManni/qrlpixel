@@ -2,6 +2,7 @@ import 'package:client/main.dart';
 import 'package:client/src/utils.dart';
 import 'package:client/src/widgets/auto_scroll.dart';
 import 'package:client/src/theme/custom_palette.dart';
+import 'package:client/src/widgets/custom_text_button.dart';
 import 'package:client/src/widgets/input_field.dart';
 import 'package:client/src/widgets/screen_padding.dart';
 import 'package:client/src/widgets/snack_alert.dart';
@@ -20,6 +21,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  bool logingIn = false;
+  bool logingInWIthGoogle = false;
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -94,8 +97,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-                  TextButton(
-                      onPressed: _handleLogin, child: const Text("Continue")),
+                  CustomTextButton(
+                      loading: logingIn,
+                      disabled: logingInWIthGoogle,
+                      onPressed: _handleLogin,
+                      child: const Text("Continue")),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
                     child: Row(
@@ -111,7 +117,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: _oAuthLogin,
+                    onPressed:
+                        logingIn || logingInWIthGoogle ? null : _oAuthLogin,
                     style: ElevatedButton.styleFrom(
                         backgroundColor: CustomPalette.white),
                     child: Row(
@@ -169,6 +176,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
+    setState(() {
+      logingIn = true;
+    });
     try {
       if (formKey.currentState!.validate()) {
         await supabase.auth.signInWithPassword(
@@ -187,10 +197,17 @@ class _LoginScreenState extends State<LoginScreen> {
         initSnackBar(context, "Something went wrong while logging in...",
             SnackAlertType.error);
       }
+    } finally {
+      setState(() {
+        logingIn = false;
+      });
     }
   }
 
   Future<void> _oAuthLogin() async {
+    setState(() {
+      logingInWIthGoogle = true;
+    });
     try {
       await supabase.auth.signInWithOAuth(
         Provider.google,
@@ -209,6 +226,10 @@ class _LoginScreenState extends State<LoginScreen> {
         initSnackBar(context, "Something went wrong while logging in...",
             SnackAlertType.error);
       }
+    } finally {
+      setState(() {
+        logingInWIthGoogle = false;
+      });
     }
   }
 
