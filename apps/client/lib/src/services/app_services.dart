@@ -192,10 +192,7 @@ class AppServices with ChangeNotifier {
           .eq('user_id', user?.id)
           .maybeSingle();
 
-      if (value == null) {
-        error?.call(null);
-        return;
-      } else {
+      if (value != null) {
         userSummary.setSummary(value);
         userSummaryLoading = false;
         notifyListeners();
