@@ -192,16 +192,14 @@ class AppServices with ChangeNotifier {
           .eq('user_id', user?.id)
           .maybeSingle();
 
-      if (value != null) {
-        userSummary.setSummary(value);
-        userSummaryLoading = false;
-        notifyListeners();
-      }
-
+      userSummary.setSummary(value);
       callback?.call(value);
     } catch (e) {
       if (kDebugMode) print("getUserSummary: $e");
       error?.call(e);
+    } finally {
+      userSummaryLoading = false;
+      notifyListeners();
     }
   }
 
