@@ -45,7 +45,7 @@ class QRCodeItemScreen extends StatelessWidget {
       ),
       floatingActionButton:
           Consumer<AppServices>(builder: (_, appServices, __) {
-        return  Skeletonizer(
+        return Skeletonizer(
           enabled: appServices.qrCodeLoading,
           child: FloatingActionButton(
             onPressed: () async {
@@ -405,7 +405,9 @@ class ChartDetails extends StatelessWidget {
       ),
       borderData: FlBorderData(
         show: true,
-        border: Border.all(color: const Color(0xff37434d)),
+        border: Border.all(
+          color: const Color(0xff37434d),
+        ),
       ),
       minX: 1,
       maxX: 12,
@@ -413,15 +415,7 @@ class ChartDetails extends StatelessWidget {
       maxY: 5,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(1, 3),
-            FlSpot(3, 2),
-            FlSpot(4, 5),
-            FlSpot(6, 3.1),
-            FlSpot(8, 4),
-            FlSpot(9, 3),
-            FlSpot(11, 4),
-          ],
+          spots: spots,
           isCurved: true,
           gradient: LinearGradient(
             colors: gradientColors,
