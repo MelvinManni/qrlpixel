@@ -39,13 +39,10 @@ class MyApp extends StatelessWidget {
           GoRouter.of(rootNavigatorKey.currentContext!).go('/reset-password');
         } else if (auth.session != null) {
           if (rootNavigatorKey.currentContext != null) {
-            if (currentLocation.startsWith('/app')) {
+            if (!currentLocation.startsWith('/app')) {
               GoRouter.of(rootNavigatorKey.currentContext!).go('/app');
             }
           }
-        } else if (auth.session?.user != null &&
-            !currentLocation.startsWith('/app')) {
-          GoRouter.of(rootNavigatorKey.currentContext!).go('/app');
         } else {
           if (rootNavigatorKey.currentContext != null) {
             GoRouter.of(rootNavigatorKey.currentContext!).go('/login');
