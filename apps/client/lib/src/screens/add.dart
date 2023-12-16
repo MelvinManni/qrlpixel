@@ -187,7 +187,7 @@ class _AddNewQRCodeScreenState extends State<AddNewQRCodeScreen> {
                           CustomTextButton(
                             loading: loading,
                             onPressed: _generateQRCode,
-                            child: const Text("Generate QR Code"),
+                            child: const Text("Generate QRL Code"),
                           )
                         ],
                       ))
