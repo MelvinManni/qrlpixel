@@ -79,7 +79,7 @@ export const createQRCode = async (req: ReqWithUser, res: Response) => {
     let logo: string | undefined;
 
     if (!validator.isEmpty(image64 ?? '')) {
-      const imgBlob = base64toBlob(image64 ?? '');
+      const imgBlob = await base64toBlob(image64 ?? '');
       // upload  the logo to stoorage
       const { data: logoData, error: logoError } = await supabaseClient.storage
         .from('qrcode/logos')
